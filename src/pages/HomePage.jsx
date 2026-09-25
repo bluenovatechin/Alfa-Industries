@@ -52,28 +52,21 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Full-Bleed Animated Background Slider Track (Spans the entire hero section) */}
+        {/* Full-bleed background slideshow: stacked slides crossfade with a slow zoom */}
         <div className="hero-bg-slider" aria-hidden="true">
-          <div
-            className="hero-bg-track"
-            style={{ transform: `translateX(-${slideIndex * 100}%)` }}
-          >
-            {HERO_IMAGES.map((img, i) => (
-              <div key={img.src} className="hero-bg-slide-item">
-                <img
-                  src={asset(img.src)}
-                  alt=""
-                  className={`hero-bg-full-img ${i === slideIndex ? 'active' : ''}`}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                />
-              </div>
-            ))}
-          </div>
+          {HERO_IMAGES.map((img, i) => (
+            <div key={img.src} className={`hero-bg-slide-item ${i === slideIndex ? 'active' : ''}`}>
+              <img
+                src={asset(img.src)}
+                alt=""
+                className="hero-bg-full-img"
+                loading={i === 0 ? 'eager' : 'lazy'}
+              />
+            </div>
+          ))}
 
-          {/* Multi-stop darkening gradient overlay ensuring crystal clear text contrast */}
+          {/* Gradient overlay keeping the copy readable */}
           <div className="hero-bg-overlay" />
-          {/* Subtle architectural CAD drafting grid */}
-          <div className="hero-bg-grid" />
           {/* Soft ambient brand glow */}
           <div className="hero-bg-glow" />
         </div>
