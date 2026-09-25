@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, Check, Plus, Download, Send, ChevronLeft, ChevronRight, Link2, ShieldCheck } from 'lucide-react';
 import { AlfaHardwareAPI } from '../data/alfaData';
 import { href } from '../lib/router';
-import { decode, productImage, onImageError, categoryName } from '../data/catalog';
+import { decode, productImage, onImageError, categoryName, asset } from '../data/catalog';
 
 export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, onToggleEnquiry }) {
   const closeRef = useRef(null);
@@ -139,7 +139,7 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
 
             <div className="product-modal-links">
               {category?.catalogPdfLocal && (
-                <a href={`/${category.catalogPdfLocal}`} target="_blank" rel="noreferrer" className="text-link">
+                <a href={asset(category.catalogPdfLocal)} target="_blank" rel="noreferrer" className="text-link">
                   <Download size={15} /> {category.name} catalogue (PDF)
                 </a>
               )}

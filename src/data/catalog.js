@@ -152,7 +152,7 @@ export const decode = (s = '') =>
     .replace(/\s+-\s+(?=\d)/g, ' ')
     .replace(/\.$/, '');
 
-export const asset = (path) => (path ? `/${path}` : '');
+export const asset = (path) => (path ? `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}` : '');
 
 export function productImage(product, size = 'full') {
   const { images } = product;
