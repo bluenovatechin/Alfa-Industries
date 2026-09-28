@@ -15,6 +15,19 @@
     <link rel="icon" type="image/png" href="/assets/images/logo.png" />
   </head>
   <body>
+    <script>
+      (function() {
+        var redirect = sessionStorage.getItem('spa_redirect');
+        if (redirect) {
+          sessionStorage.removeItem('spa_redirect');
+          window.history.replaceState(null, '', redirect);
+        } else if (window.location.hash.startsWith('#/')) {
+          var base = '/Alfa-Industries';
+          var clean = window.location.hash.slice(1);
+          window.history.replaceState(null, '', base + clean);
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

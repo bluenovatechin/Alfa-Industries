@@ -1,41 +1,122 @@
 import { useEffect, useState } from 'react';
 
-// Minimal hash router: "#/products/spider-fittings?p=ASF-01&q=roller"
-export function parseHash(hash) {
-  const raw = (hash || '').replace(/^#/, '') || '/';
-  const [path, qs = ''] = raw.split('?');
-  const segments = path.split('/').filter(Boolean).map(decodeURIComponent);
+// Get base URL configured by Vite (e.g. '/Alfa-Industries/' or '/')
+const rawBase = import.meta.env.BASE_URL || '/';
+export const BASE_PATH = rawBase.replace(/\/+$/, ''); // e.g. '/Alfa-Industries' or ''
+
+// Parse current URL into clean { path, segments, query } without '#'
+export function parsePath(pathname = window.location.pathname, search = window.location.search) {
+  let clean = pathname || '/';
+  if (BASE_PATH && clean.startsWith(BASE_PATH)) {
+    clean = clean.slice(BASE_PATH.length);
+  }
+  if (!clean.startsWith('/')) {
+    clean = '/' + clean;
+  }
+
+  // Gracefully handle any legacy hash links (e.g. #/products) if encountered
+  if (window.location.hash.startsWith('#/')) {
+    const hashContent = window.location.hash.slice(1);
+    const [hPath, hQs] = hashContent.split('?');
+    if (hPath) clean = hPath.startsWith('/') ? hPath : '/' + hPath;
+    if (hQs && !search) {
+      search = '?' + hQs;
+    }
+  }
+
+  const [pathOnly] = clean.split('?');
+  const segments = pathOnly.split('/').filter(Boolean).map(decodeURIComponent);
+  const query = Object.fromEntries(new URLSearchParams(search));
+
   return {
     path: '/' + segments.join('/'),
     segments,
-    query: Object.fromEntries(new URLSearchParams(qs))
+    query
   };
 }
 
+// Generate a clean URL without '#'
 export function href(path, query = {}) {
+  const cleanPath = path ? (path.startsWith('/') ? path : '/' + path) : '/';
+  const fullPath = (BASE_PATH + cleanPath) || '/';
+
   const qs = new URLSearchParams(
     Object.entries(query).filter(([, v]) => v !== undefined && v !== null && v !== '')
   ).toString();
-  return '#' + path + (qs ? '?' + qs : '');
+
+  return fullPath + (qs ? '?' + qs : '');
 }
 
+// Programmatic navigation without '#'
 export function navigate(path, query) {
-  window.location.hash = href(path, query);
+  const targetUrl = href(path, query);
+  const currentUrl = window.location.pathname + window.location.search;
+  if (targetUrl !== currentUrl) {
+    window.history.pushState(null, '', targetUrl);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }
 }
 
-// Update the query of the current route without adding a history entry.
+// Update current query string without adding extra history entries
 export function replaceQuery(query) {
-  const { path } = parseHash(window.location.hash);
-  window.history.replaceState(null, '', href(path, query));
-  window.dispatchEvent(new HashChangeEvent('hashchange'));
+  const { path } = parsePath();
+  const url = href(path, query);
+  window.history.replaceState(null, '', url);
+  window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
-export function useHashRoute() {
-  const [route, setRoute] = useState(() => parseHash(window.location.hash));
+// Delegate internal <a> clicks for seamless client-side SPA navigation
+if (typeof window !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    // Only intercept primary left clicks without modifier keys
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) {
+      return;
+    }
+
+    const anchor = e.target.closest('a');
+    if (!anchor || !anchor.href) return;
+
+    // Skip external links, new tabs, downloads, email, phone
+    if (anchor.target && anchor.target !== '_self') return;
+    if (anchor.hasAttribute('download')) return;
+    if (anchor.getAttribute('rel')?.includes('external')) return;
+    if (
+      anchor.href.startsWith('mailto:') ||
+      anchor.href.startsWith('tel:') ||
+      anchor.href.startsWith('javascript:')
+    ) {
+      return;
+    }
+
+    const url = new URL(anchor.href, window.location.href);
+    if (url.origin !== window.location.origin) return;
+
+    // Check if the link matches our base path
+    if (BASE_PATH && !url.pathname.startsWith(BASE_PATH)) return;
+
+    e.preventDefault();
+    if (url.pathname !== window.location.pathname || url.search !== window.location.search) {
+      window.history.pushState(null, '', url.pathname + url.search + url.hash);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } else if (url.hash && url.hash !== window.location.hash) {
+      window.location.hash = url.hash;
+    }
+  });
+}
+
+// Hook that listens to route changes
+export function useRoute() {
+  const [route, setRoute] = useState(() => parsePath());
+
   useEffect(() => {
-    const onChange = () => setRoute(parseHash(window.location.hash));
-    window.addEventListener('hashchange', onChange);
-    return () => window.removeEventListener('hashchange', onChange);
+    const onChange = () => setRoute(parsePath());
+    window.addEventListener('popstate', onChange);
+    return () => window.removeEventListener('popstate', onChange);
   }, []);
+
   return route;
 }
+
+// Backward-compatibility aliases
+export const useHashRoute = useRoute;
+export const parseHash = parsePath;

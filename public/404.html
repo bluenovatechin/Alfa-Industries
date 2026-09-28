@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      // Single Page App redirect for GitHub Pages
+      // Saves the requested deep path into sessionStorage and redirects to the site root
+      var path = window.location.pathname;
+      var search = window.location.search;
+      var hash = window.location.hash;
+      sessionStorage.setItem('spa_redirect', path + search + hash);
+      window.location.replace('/Alfa-Industries/');
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

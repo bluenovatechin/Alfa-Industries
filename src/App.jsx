@@ -12,7 +12,7 @@ import QualityPage from './pages/QualityPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-import { useHashRoute, navigate } from './lib/router';
+import { useRoute, href, navigate } from './lib/router';
 import { getProduct, categoryName } from './data/catalog';
 
 const STORAGE_KEY = 'alfa-enquiry-v1';
@@ -35,7 +35,7 @@ const PAGE_TITLES = {
 };
 
 export default function App() {
-  const route = useHashRoute();
+  const route = useRoute();
   const page = route.segments[0] || '';
 
   const [enquiry, setEnquiry] = useState(loadEnquiry);
@@ -112,8 +112,8 @@ export default function App() {
   const switchProduct = useCallback(
     (code) => {
       const next = { ...route.query, p: code };
-      window.history.replaceState(null, '', '#' + route.path + '?' + new URLSearchParams(next));
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      window.history.replaceState(null, '', href(route.path, next));
+      window.dispatchEvent(new PopStateEvent('popstate'));
     },
     [route]
   );
