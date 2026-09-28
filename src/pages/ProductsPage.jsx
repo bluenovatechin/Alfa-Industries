@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, LayoutGrid, List, Download, X, SlidersHorizontal, Plus, Check } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Search, LayoutGrid, List, Download, X, SlidersHorizontal, Plus, Check, ChevronRight, ArrowLeft } from 'lucide-react';
 import { href } from '../lib/router';
 import {
   getCategories, getProducts, decode, productImage, onImageError, shortMaterial, categoryName,
@@ -10,10 +10,24 @@ import PageHeader from '../components/PageHeader';
 import CtaBand from '../components/CtaBand';
 
 const SORTS = {
-  catalogue: { label: 'Catalogue order', fn: null },
-  code: { label: 'Item code (A–Z)', fn: (a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }) },
-  name: { label: 'Product name (A–Z)', fn: (a, b) => decode(a.title).localeCompare(decode(b.title)) }
+  catalogue: { label: 'Default', fn: null },
+  code: { label: 'Item code', fn: (a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }) },
+  name: { label: 'Name A–Z', fn: (a, b) => decode(a.title).localeCompare(decode(b.title)) }
 };
+
+// Matches the breakpoint where the filter sidebar collapses into a drawer
+const COMPACT_QUERY = '(max-width: 1024px)';
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = () => setMatches(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [query]);
+  return matches;
+}
 
 function toggleInSet(set, value) {
   const next = new Set(set);
@@ -32,6 +46,10 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
   const [sort, setSort] = useState('catalogue');
   const [view, setView] = useState('grid');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const isCompact = useMediaQuery(COMPACT_QUERY);
+  const sectionRef = useRef(null);
+  const switcherRef = useRef(null);
+  const firstRender = useRef(true);
 
   useEffect(() => {
     if (route.query.q !== undefined) setSearch(route.query.q);
@@ -55,6 +73,26 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
     });
     return SORTS[sort].fn ? [...list].sort(SORTS[sort].fn) : list;
   }, [inScope, search, materials, finishes, sort]);
+
+  // On phones and tablets, /products starts with a guide to the ranges instead
+  // of every product at once. "?all=1" or any search/filter shows the full list.
+  const isFiltering = Boolean(search.trim() || materials.size || finishes.size);
+  const showRangeOverview = isCompact && !category && !isFiltering && route.query.all !== '1';
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    if (route.query.all === '1') sectionRef.current?.scrollIntoView({ block: 'start' });
+  }, [route.query.all]);
+
+  // Keep the current range's chip visible in the horizontally scrolling switcher
+  useEffect(() => {
+    const strip = switcherRef.current;
+    const chip = strip?.querySelector('.range-chip.active');
+    if (chip) strip.scrollLeft = chip.offsetLeft - (strip.clientWidth - chip.offsetWidth) / 2;
+  }, [category?.id]);
 
   const countFor = (predicate) => inScope.filter(predicate).length;
 
@@ -98,7 +136,7 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
         }
       />
 
-      <section className="section section-catalogue">
+      <section className="section section-catalogue" ref={sectionRef}>
         <div className="container catalogue-layout">
           <aside className={`filters ${filtersOpen ? 'open' : ''}`} aria-label="Filters">
             <div className="filters-mobile-head">
@@ -112,7 +150,7 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
               <h2 className="filter-title">Range</h2>
               <ul className="filter-ranges">
                 <li>
-                  <a href={href('/products', search ? { q: search } : {})} className={!category ? 'active' : ''} onClick={() => setFiltersOpen(false)}>
+                  <a href={href('/products', { all: '1', q: search || undefined })} className={!category ? 'active' : ''} onClick={() => setFiltersOpen(false)}>
                     All products <span>{allProducts.length}</span>
                   </a>
                 </li>
@@ -177,6 +215,24 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
           </aside>
 
           <div className="catalogue-main">
+            {!showRangeOverview && (
+              <nav className="range-switcher" aria-label="Product ranges" ref={switcherRef}>
+                <a href={href('/products')} className="range-chip range-chip-back">
+                  <ArrowLeft size={14} /> All ranges
+                </a>
+                {categories.map((c) => (
+                  <a
+                    key={c.id}
+                    href={href('/products/' + c.id)}
+                    className={`range-chip ${category?.id === c.id ? 'active' : ''}`}
+                    aria-current={category?.id === c.id ? 'page' : undefined}
+                  >
+                    {c.shortName}
+                  </a>
+                ))}
+              </nav>
+            )}
+
             <div className="toolbar">
               <div className="toolbar-search">
                 <Search size={17} aria-hidden="true" />
@@ -190,6 +246,7 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
                 />
               </div>
 
+              {!showRangeOverview && (<>
               <button className="btn btn-outline filters-toggle" onClick={() => setFiltersOpen(true)}>
                 <SlidersHorizontal size={16} /> Filters
                 {materials.size + finishes.size > 0 && <span className="count-badge static">{materials.size + finishes.size}</span>}
@@ -212,7 +269,40 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
                   <List size={16} />
                 </button>
               </div>
+              </>)}
             </div>
+
+            {showRangeOverview ? (
+              <div className="range-overview">
+                <div className="range-overview-head">
+                  <h2>Choose a product range</h2>
+                  <p>
+                    Our {allProducts.length} products are grouped into {categories.length} ranges. Tap a range to see
+                    what it includes, or search above by item code or name.
+                  </p>
+                </div>
+                <ul className="range-list">
+                  {categories.map((c) => (
+                    <li key={c.id}>
+                      <a href={href('/products/' + c.id)} className="range-row">
+                        <span className="range-row-media">
+                          {c.cover && <img src={productImage(c.cover, 'thumb')} alt="" loading="lazy" onError={onImageError(c.cover)} />}
+                        </span>
+                        <span className="range-row-body">
+                          <strong>{c.shortName}</strong>
+                          <span className="range-row-desc">{c.description}</span>
+                          <span className="range-row-count">View {c.productCount} products</span>
+                        </span>
+                        <ChevronRight size={18} className="range-row-arrow" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a href={href('/products', { all: '1' })} className="btn btn-outline btn-block">
+                  <LayoutGrid size={16} /> Show all {allProducts.length} products in one list
+                </a>
+              </div>
+            ) : (<>
 
             <div className="results-bar">
               <span className="results-count" aria-live="polite">
@@ -272,19 +362,19 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
                       const added = isInEnquiry(p.code);
                       return (
                         <tr key={p.code}>
-                          <td>
+                          <td className="td-thumb">
                             <button className="table-thumb" onClick={() => openProduct(p.code)} aria-label={`View ${p.code}`}>
                               <img src={productImage(p, 'thumb')} alt="" loading="lazy" onError={onImageError(p)} />
                             </button>
                           </td>
                           <td className="code">{p.code}</td>
-                          <td>
+                          <td className="td-title">
                             <button className="table-link" onClick={() => openProduct(p.code)}>{decode(p.title)}</button>
                           </td>
-                          {!category && <td className="muted">{categoryName(p.categoryId)}</td>}
-                          <td className="muted">{shortMaterial(p) || '—'}</td>
-                          <td className="muted">{p.specifications?.Finish || '—'}</td>
-                          <td className="align-right">
+                          {!category && <td className="muted td-meta" data-label="Range">{categoryName(p.categoryId)}</td>}
+                          <td className="muted td-meta" data-label="Material">{shortMaterial(p) || '—'}</td>
+                          <td className="muted td-meta" data-label="Finish">{p.specifications?.Finish || '—'}</td>
+                          <td className="align-right td-action">
                             <button
                               className={`enquiry-toggle compact ${added ? 'added' : ''}`}
                               onClick={() => toggleEnquiry(p)}
@@ -302,6 +392,7 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
                 </table>
               </div>
             )}
+            </>)}
           </div>
         </div>
         {filtersOpen && <div className="filters-scrim" onClick={() => setFiltersOpen(false)} />}
