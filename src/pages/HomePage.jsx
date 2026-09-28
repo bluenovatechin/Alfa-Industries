@@ -126,69 +126,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
               </a>            </div>
           </div>
 
-          {/* Right Column: Floating Glassmorphic Slide Controller & Project Spotlight */}
-          <div className="hero-spotlight-card">
-            <div className="hero-spotlight-top">
-              <span className="hero-spotlight-badge">
-                <span className="hero-spotlight-dot" />
-                BACKGROUND PROJECT · {String(slideIndex + 1).padStart(2, '0')} / {String(HERO_IMAGES.length).padStart(2, '0')}
-              </span>
-              <button
-                type="button"
-                className="hero-spotlight-ctrl-btn"
-                onClick={() => setIsPaused((p) => !p)}
-                aria-label={isPaused ? 'Resume slideshow' : 'Pause slideshow'}
-                title={isPaused ? 'Resume slideshow' : 'Pause slideshow'}
-              >
-                {isPaused ? <Play size={13} /> : <Pause size={13} />}
-              </button>
-            </div>
 
-            <div className="hero-spotlight-content">
-              <h2 className="hero-spotlight-title">{currentHeroImg.label}</h2>
-              <p className="hero-spotlight-desc">
-                Precision point-fixed structural glazing & architectural fittings manufactured under ISO 9001:2008 procedures.
-              </p>
-            </div>
-
-            <div className="hero-spotlight-footer">
-              <div className="hero-dots" role="tablist" aria-label="Project images">
-                {HERO_IMAGES.map((img, i) => (
-                  <button
-                    key={img.src}
-                    role="tab"
-                    aria-selected={i === slideIndex}
-                    aria-label={img.label}
-                    className={i === slideIndex ? 'active' : ''}
-                    onClick={() => setSlideIndex(i)}
-                  >
-                    <span style={i === slideIndex && !isPaused ? { animationDuration: `${SLIDE_MS}ms` } : undefined} />
-                  </button>
-                ))}
-              </div>
-
-              <div className="hero-spotlight-arrows">
-                <button
-                  type="button"
-                  className="hero-spotlight-arrow"
-                  onClick={prevSlide}
-                  aria-label="Previous slide"
-                  title="Previous slide"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <button
-                  type="button"
-                  className="hero-spotlight-arrow"
-                  onClick={nextSlide}
-                  aria-label="Next slide"
-                  title="Next slide"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Credentials Strip with Translucent Glassmorphic Backdrop */}

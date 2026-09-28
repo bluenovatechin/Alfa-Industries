@@ -32,13 +32,25 @@ export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCoun
   const megaRef = useRef(null);
   const categories = getCategories();
 
+  // Shrinking the header changes page height, which nudges scrollY. Separate
+  // enter/exit thresholds (gap larger than the shrink) stop it flickering at the
+  // boundary, and rAF limits the check to once per frame.
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      setScrolled((prev) => (prev ? y > 4 : y > 32));
     };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   // Close menus whenever the route changes
@@ -81,21 +93,6 @@ export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCoun
 
   return (
     <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
-      <div className="utility-bar">
-        <div className="container utility-inner">
-          <span className="utility-item">
-            <ShieldCheck size={14} /> {COMPANY.certification} certified manufacturer · Shapar, Rajkot, India
-          </span>
-          <div className="utility-links">
-            <a href={COMPANY.phoneHref} className="utility-item">
-              <Phone size={13} /> {COMPANY.phone}
-            </a>
-            <a href={`mailto:${COMPANY.email}`} className="utility-item">
-              <Mail size={13} /> {COMPANY.email}
-            </a>
-          </div>
-        </div>
-      </div>
 
       <nav className="navbar" aria-label="Main">
         <div className="container nav-inner" ref={megaRef}>
