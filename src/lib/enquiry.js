@@ -4,10 +4,6 @@ export function itemsToLines(items) {
   return items.map((i, idx) => `${idx + 1}. ${i.product.code} - ${decode(i.product.title)} (Qty: ${i.qty})`).join('\n');
 }
 
-export function mailtoHref(subject, body) {
-  return `mailto:${COMPANY.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
 export function whatsappHref(text) {
   return `https://wa.me/${COMPANY.whatsapp}?text=${encodeURIComponent(text)}`;
 }

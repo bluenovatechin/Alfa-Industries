@@ -1,5 +1,6 @@
 import React from 'react';
-import { Building2, Factory, Home, Globe2, Phone, ArrowRight } from 'lucide-react';
+import { Building2, Factory, Home, Globe2, ArrowRight } from 'lucide-react';
+import { PhoneIcon } from '../components/ContactIcons';
 import { href } from '../lib/router';
 import { COPY, COMPANY, MACHINES, PROCESS, asset, TOTAL_PRODUCTS, TOTAL_CATEGORIES } from '../data/catalog';
 import PageHeader from '../components/PageHeader';
@@ -120,7 +121,7 @@ export default function CompanyPage() {
                 <div>
                   <h3>{c.name}</h3>
                   <a href={`tel:${c.tel}`} className="team-phone">
-                    <Phone size={14} /> {c.phone}
+                    <PhoneIcon size={14} /> {c.phone}
                   </a>
                 </div>
               </div>

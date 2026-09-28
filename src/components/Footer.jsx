@@ -1,8 +1,10 @@
 import React from 'react';
-import { Phone, Mail, MapPin, ArrowUpRight } from 'lucide-react';
+import { MapPin, ArrowUpRight } from 'lucide-react';
+import { PhoneIcon, MailIcon } from './ContactIcons';
 import { href } from '../lib/router';
 import { COMPANY, getCategories } from '../data/catalog';
 import { BrandMark } from './Navbar';
+import SocialLinks from './SocialLinks';
 
 export default function Footer() {
   const categories = getCategories();
@@ -18,6 +20,7 @@ export default function Footer() {
               fittings, glass connectors, handles, sliding systems and floor springs.
             </p>
             <div className="footer-cert">{COMPANY.certification} certified</div>
+            <SocialLinks />
           </div>
 
           <div>
@@ -50,19 +53,19 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <Phone size={16} />
+                <PhoneIcon size={16} />
                 <a href={COMPANY.phoneHref}>{COMPANY.phone}</a>
               </li>
               {COMPANY.contacts.map((c) => (
                 <li key={c.name}>
-                  <Phone size={16} />
+                  <PhoneIcon size={16} />
                   <span>
                     <a href={`tel:${c.tel}`}>{c.phone}</a> <span className="muted">· {c.name}</span>
                   </span>
                 </li>
               ))}
               <li>
-                <Mail size={16} />
+                <MailIcon size={16} />
                 <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
               </li>
             </ul>

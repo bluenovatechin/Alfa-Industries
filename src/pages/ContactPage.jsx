@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Send, MessageCircle, CheckCircle2, Navigation, ClipboardList } from 'lucide-react';
-import { href } from '../lib/router';
-import { itemsToLines, mailtoHref, whatsappHref } from '../lib/enquiry';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, CheckCircle2, Navigation, ClipboardList, ArrowLeft, RotateCcw } from 'lucide-react';
+import { PhoneIcon, MailIcon, WhatsAppIcon } from '../components/ContactIcons';
+import { href, navigate, replaceQuery } from '../lib/router';
+import { itemsToLines, whatsappHref } from '../lib/enquiry';
 import { COMPANY, getProduct, decode, productImage, onImageError } from '../data/catalog';
 import PageHeader from '../components/PageHeader';
+import SocialLinks, { SOCIAL_LINKS } from '../components/SocialLinks';
 import { QtyStepper } from '../components/QuoteDrawer';
 
 const ENQUIRY_TYPES = ['Project quotation', 'Dealer / distributor enquiry', 'Export enquiry', 'Custom design', 'Technical question', 'Other'];
@@ -14,7 +16,7 @@ function validate(f) {
   const errors = {};
   if (!f.name.trim()) errors.name = 'Please enter your name.';
   if (!/^[+\d][\d\s-]{6,}$/.test(f.phone.trim())) errors.phone = 'Please enter a valid phone number.';
-  if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) errors.email = 'Please enter a valid email address.';
+  if (f.email.trim() && !/^\S+@\S+\.\S+$/.test(f.email.trim())) errors.email = 'Please enter a valid email address.';
   return errors;
 }
 
@@ -23,7 +25,27 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
 
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
-  const [sent, setSent] = useState(null);
+  // The "sent" step lives in the URL (?sent=1) so browser back/forward moves
+  // between the form and the confirmation without losing what was typed.
+  const [sentBody, setSentBody] = useState(null);
+  const sent = route.query.sent === '1' && sentBody;
+  const formCardRef = useRef(null);
+  const firstRender = useRef(true);
+
+  useEffect(() => {
+    if (route.query.sent === '1' && !sentBody) {
+      const { sent: _, ...rest } = route.query;
+      replaceQuery(rest);
+    }
+  }, [route.query, sentBody]);
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    formCardRef.current?.scrollIntoView({ block: 'start' });
+  }, [!!sent]);
 
   useEffect(() => {
     const prefill = route.query.msg || (refProduct ? `I would like a quotation for ${refProduct.code} (${decode(refProduct.title)}).\nQuantity: \nGlass thickness / door type: ` : '');
@@ -37,10 +59,12 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
 
   const buildBody = () =>
     [
+      `Hello Alfa Industries, I have an enquiry from your website.`,
+      '',
       `Name: ${form.name}`,
       form.company && `Company: ${form.company}`,
       `Phone: ${form.phone}`,
-      `Email: ${form.email}`,
+      form.email && `Email: ${form.email}`,
       form.city && `City / Country: ${form.city}`,
       `Enquiry type: ${form.type}`,
       '',
@@ -58,10 +82,19 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
       document.getElementById(Object.keys(found)[0])?.focus();
       return;
     }
-    const subject = `${form.type}${form.company ? ` - ${form.company}` : ''} (website enquiry)`;
     const body = buildBody();
-    setSent({ subject, body });
-    window.location.href = mailtoHref(subject, body);
+    setSentBody(body);
+    window.open(whatsappHref(body), '_blank', 'noopener');
+    navigate('/contact', { ...route.query, sent: '1' });
+  };
+
+  const editEnquiry = () => window.history.back();
+
+  const startNew = () => {
+    setSentBody(null);
+    setForm(EMPTY);
+    const { sent: _, ref, msg, ...rest } = route.query;
+    replaceQuery(rest);
   };
 
   return (
@@ -75,25 +108,25 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
 
       <section className="section">
         <div className="container contact-grid">
-          <div className="form-card">
+          <div className="form-card" ref={formCardRef}>
             {sent ? (
               <div className="sent-state">
                 <CheckCircle2 size={40} />
                 <h2>Your enquiry is ready to send</h2>
                 <p>
-                  Your email app should have opened with the enquiry filled in. Press <strong>Send</strong> to deliver it to{' '}
-                  {COMPANY.email}. If nothing opened, send it on WhatsApp instead.
+                  WhatsApp should have opened with your enquiry filled in. Press <strong>Send</strong> in WhatsApp to
+                  deliver it to our sales team. If nothing opened, use the button below.
                 </p>
                 <div className="sent-actions">
-                  <a href={whatsappHref(sent.body)} target="_blank" rel="noreferrer" className="btn btn-brand">
-                    <MessageCircle size={16} /> Send on WhatsApp
+                  <a href={whatsappHref(sentBody)} target="_blank" rel="noreferrer" className="btn btn-brand">
+                    <WhatsAppIcon size={16} /> Open WhatsApp again
                   </a>
-                  <a href={mailtoHref(sent.subject, sent.body)} className="btn btn-outline">
-                    <Mail size={16} /> Open email again
-                  </a>
+                  <button type="button" className="btn btn-outline" onClick={editEnquiry}>
+                    <ArrowLeft size={16} /> Back to edit enquiry
+                  </button>
                 </div>
-                <button className="text-btn" onClick={() => { setSent(null); setForm(EMPTY); }}>
-                  Start a new enquiry
+                <button type="button" className="text-btn" onClick={startNew}>
+                  <RotateCcw size={14} /> Start a new enquiry
                 </button>
               </div>
             ) : (
@@ -114,7 +147,7 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
                   <Field id="phone" label="Mobile / phone *" error={errors.phone}>
                     <input id="phone" type="tel" value={form.phone} onChange={set('phone')} autoComplete="tel" aria-invalid={!!errors.phone} />
                   </Field>
-                  <Field id="email" label="Email *" error={errors.email}>
+                  <Field id="email" label="Email" error={errors.email}>
                     <input id="email" type="email" value={form.email} onChange={set('email')} autoComplete="email" aria-invalid={!!errors.email} />
                   </Field>
                 </div>
@@ -176,9 +209,9 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
 
                 <div className="form-submit">
                   <button type="submit" className="btn btn-brand btn-lg">
-                    <Send size={17} /> Send enquiry
+                    <WhatsAppIcon size={17} /> Send enquiry on WhatsApp
                   </button>
-                  <span className="form-hint">Opens your email app with the enquiry filled in.</span>
+                  <span className="form-hint">Opens WhatsApp with the enquiry filled in.</span>
                 </div>
               </form>
             )}
@@ -199,14 +232,14 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
                   </div>
                 </li>
                 <li>
-                  <Phone size={18} />
+                  <PhoneIcon size={18} />
                   <div>
                     <span className="contact-label">Phone & fax</span>
                     <a href={COMPANY.phoneHref}>{COMPANY.phone}</a>
                   </div>
                 </li>
                 <li>
-                  <Mail size={18} />
+                  <MailIcon size={18} />
                   <div>
                     <span className="contact-label">Email</span>
                     <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
@@ -222,7 +255,7 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
                   <li key={c.name}>
                     <span className="person-name">{c.name}</span>
                     <a href={`tel:${c.tel}`} className="person-phone">
-                      <Phone size={14} /> {c.phone}
+                      <PhoneIcon size={14} /> {c.phone}
                     </a>
                   </li>
                 ))}
@@ -230,12 +263,19 @@ export default function ContactPage({ route, enquiryItems, onSetQty, onRemoveIte
             </div>
 
             <a href={whatsappHref('Hello Alfa Industries, I have an enquiry about HART hardware.')} target="_blank" rel="noreferrer" className="whatsapp-card">
-              <MessageCircle size={22} />
+              <WhatsAppIcon size={22} />
               <span>
                 <strong>Chat on WhatsApp</strong>
                 <span>Quick answers from our sales team</span>
               </span>
             </a>
+
+            {SOCIAL_LINKS.length > 0 && (
+              <div className="contact-card">
+                <h2 className="contact-card-title">Follow us</h2>
+                <SocialLinks className="social-list" showLabels />
+              </div>
+            )}
           </aside>
         </div>
       </section>

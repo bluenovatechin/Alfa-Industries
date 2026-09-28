@@ -12,6 +12,11 @@ export const COMPANY = {
   email: 'info@alfahardware.com',
   website: 'www.alfahardware.com',
   whatsapp: '919879252904',
+  // Links with an empty url are hidden until one is added
+  social: [
+    { id: 'instagram', label: 'Instagram', handle: '@_alfa_hardware_industries', url: 'https://www.instagram.com/_alfa_hardware_industries/' },
+    { id: 'facebook', label: 'Facebook', handle: 'HART by Alfa Hardware Industries', url: 'https://www.facebook.com/hart.alfahardware/' }
+  ],
   addressLines: [
     'Survey No. 257, Plot No. 1-A,',
     'Opp. Supreme Polymers, B/h. Maruti Petrol Pump,',

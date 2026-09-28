@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ClipboardList, Menu, X, ChevronDown, Phone, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Search, ClipboardList, Menu, X, ChevronDown, ArrowRight, ShieldCheck } from 'lucide-react';
+import { PhoneIcon } from './ContactIcons';
 import { href } from '../lib/router';
 import { COMPANY, getCategories, productImage, TOTAL_PRODUCTS } from '../data/catalog';
 
@@ -232,7 +233,7 @@ export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCoun
                 Request a quote
               </a>
               <a href={COMPANY.phoneHref} className="btn btn-outline btn-block">
-                <Phone size={16} /> {COMPANY.phone}
+                <PhoneIcon size={16} /> {COMPANY.phone}
               </a>
             </div>
           </aside>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowRight, Phone } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { PhoneIcon } from './ContactIcons';
 import { href } from '../lib/router';
 import { COMPANY } from '../data/catalog';
 
@@ -19,7 +20,7 @@ export default function CtaBand({
             Request a quote <ArrowRight size={17} />
           </a>
           <a href={COMPANY.phoneHref} className="btn btn-ghost-light btn-lg">
-            <Phone size={17} /> {COMPANY.phone}
+            <PhoneIcon size={17} /> {COMPANY.phone}
           </a>
         </div>
       </div>

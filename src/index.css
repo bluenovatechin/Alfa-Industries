@@ -3965,6 +3965,7 @@ kbd {
 }
 
 .form-card {
+  scroll-margin-top: calc(var(--header-h) + 16px);
   padding: 40px;
   background: #ffffff;
   border: 1px solid var(--line);
@@ -4184,6 +4185,70 @@ kbd {
   margin: 10px 0;
 }
 
+
+/* ---------- Social links ---------- */
+
+.social-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  transition: background-color 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
+}
+
+.social-links a:hover {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.social-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  transition: border-color 150ms var(--ease), background-color 150ms var(--ease);
+}
+
+.social-list a:hover {
+  border-color: var(--brand);
+  background: var(--bg-tint);
+}
+
+.social-list svg {
+  flex-shrink: 0;
+  color: var(--brand);
+}
+
+.social-list strong {
+  display: block;
+  font-size: 0.9375rem;
+}
+
+.social-list span span {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
 .contact-aside {
   display: flex;
   flex-direction: column;

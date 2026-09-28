@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { X, Trash2, ClipboardList, Minus, Plus, ArrowRight, MessageCircle, Mail } from 'lucide-react';
+import { X, Trash2, ClipboardList, Minus, Plus, ArrowRight } from 'lucide-react';
+import { WhatsAppIcon } from './ContactIcons';
 import { href } from '../lib/router';
-import { quickEnquiryText, mailtoHref, whatsappHref } from '../lib/enquiry';
+import { quickEnquiryText, whatsappHref } from '../lib/enquiry';
 import { decode, productImage, onImageError, categoryName } from '../data/catalog';
 
 export function QtyStepper({ value, onChange, label }) {
@@ -104,10 +105,7 @@ export default function QuoteDrawer({ isOpen, onClose, items, onSetQty, onRemove
               <span>or send the list directly</span>
               <div className="drawer-alt-buttons">
                 <a href={whatsappHref(text)} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                  <MessageCircle size={15} /> WhatsApp
-                </a>
-                <a href={mailtoHref(`Quotation request - ${items.length} HART products`, text)} className="btn btn-outline btn-sm">
-                  <Mail size={15} /> Email
+                  <WhatsAppIcon size={15} /> Send on WhatsApp
                 </a>
               </div>
             </div>
