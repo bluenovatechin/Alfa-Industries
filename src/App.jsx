@@ -9,7 +9,6 @@ import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import CompanyPage from './pages/CompanyPage';
 import QualityPage from './pages/QualityPage';
-import DownloadsPage from './pages/DownloadsPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -32,7 +31,6 @@ const PAGE_TITLES = {
   products: 'Products',
   company: 'Company',
   quality: 'Quality',
-  catalogues: 'Catalogues',
   contact: 'Contact & Enquiry'
 };
 
@@ -165,9 +163,6 @@ export default function App() {
       break;
     case 'quality':
       content = <QualityPage />;
-      break;
-    case 'catalogues':
-      content = <DownloadsPage />;
       break;
     case 'contact':
       content = (

@@ -42,7 +42,6 @@ export default function CompanyPage() {
               <div><dt>Production</dt><dd>100% in-house</dd></div>
               <div><dt>Plant</dt><dd>Shapar (Veraval), Rajkot, Gujarat</dd></div>
             </dl>
-            <a href={href('/catalogues')} className="btn btn-dark btn-block">Download catalogues</a>
           </aside>
         </div>
       </section>

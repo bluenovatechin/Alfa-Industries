@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ClipboardList, Menu, X, ChevronDown, Phone, Mail, ArrowRight, Download, ShieldCheck } from 'lucide-react';
+import { Search, ClipboardList, Menu, X, ChevronDown, Phone, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { href } from '../lib/router';
 import { COMPANY, getCategories, productImage, TOTAL_PRODUCTS } from '../data/catalog';
 
 const LINKS = [
   { id: 'company', label: 'Company' },
   { id: 'quality', label: 'Quality' },
-  { id: 'catalogues', label: 'Catalogues' },
   { id: 'contact', label: 'Contact' }
 ];
 
@@ -28,9 +27,19 @@ export function BrandMark({ inverted = false }) {
 export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCount, onOpenQuote }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef(null);
   const megaRef = useRef(null);
   const categories = getCategories();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 15);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close menus whenever the route changes
   useEffect(() => {
@@ -71,7 +80,7 @@ export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCoun
   };
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
       <div className="utility-bar">
         <div className="container utility-inner">
           <span className="utility-item">
@@ -83,9 +92,6 @@ export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCoun
             </a>
             <a href={`mailto:${COMPANY.email}`} className="utility-item">
               <Mail size={13} /> {COMPANY.email}
-            </a>
-            <a href={href('/catalogues')} className="utility-item">
-              <Download size={13} /> Catalogues
             </a>
           </div>
         </div>
@@ -182,9 +188,6 @@ export default function Navbar({ page, activeCategory, onOpenSearch, enquiryCoun
               </p>
               <a href={href('/products')} className="btn btn-dark btn-block" tabIndex={megaOpen ? 0 : -1}>
                 View all products <ArrowRight size={16} />
-              </a>
-              <a href={href('/catalogues')} className="text-link" tabIndex={megaOpen ? 0 : -1}>
-                <Download size={14} /> Download PDF catalogues
               </a>
             </div>
           </div>

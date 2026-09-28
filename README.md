@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/images/logo.png" alt="Alfa Industries - HART Architectural Hardware" width="220" />
+<img src="public/assets/images/logo.png" alt="Alfa Industries - HART Architectural Hardware" width="220" />
 
 # HART Architectural Hardware by Alfa Industries
 
@@ -55,8 +55,8 @@ The application is automatically built and deployed via GitHub Actions:
 - **🔎 Deep Specification Modals**  
   Every product card opens into a comprehensive technical sheet displaying high-resolution photos, exact AISI stainless steel grades, available finishes (Glossy, Matt, Satin), glass thickness tolerances, and dimensions.
 
-- **📥 Digital Downloads Center**  
-  One-click access to 9 official PDF product catalogs and brochures directly bundled in the repository for both online reading and offline reference.
+- **📥 PDF Catalogues**  
+  Each product range and product sheet links directly to its official PDF catalogue, bundled in the repository.
 
 - **🏭 Complete In-House Infrastructure Showcase**  
   Detailed manufacturing breakdown highlighting Alfa Industries' in-house machinery (VMC, CNC, hydraulic bending machines, power presses, surface and round-pipe grinding, TIG welding).
@@ -75,15 +75,15 @@ All products are manufactured under rigorous **ISO 9001:2008** quality standards
 
 | # | Product Category | Items | Item Code Range | Brochure / Catalog PDF |
 | :-: | :--- | :---: | :--- | :--- |
-| **1** | **Spider Fittings** | **23** | `ASF-01` to `ASP-01` | [`spider-fittings.pdf`](assets/pdf/spider-fittings.pdf) |
-| **2** | **Canopy Fittings** | **5** | `ACF-01` to `ACF-05` | [`canopy-fittings.pdf`](assets/pdf/canopy-fittings.pdf) |
-| **3** | **Glass Door Sliding Folding Systems** | **23** | `AGSF-01` to `A-4` | [`glass-door-sliding-folding-system.pdf`](assets/pdf/glass-door-sliding-folding-system.pdf) |
-| **4** | **Shower Glass Fittings & Sliding Handles** | **24** | `ASDH-01` to `A-R-04` | [`shower-glass-fittings.pdf`](assets/pdf/shower-glass-fittings.pdf) |
-| **5** | **Patch Fittings** | **10** | `APF-01` to `APF-10` | [`patch-fittings.pdf`](assets/pdf/patch-fittings.pdf) |
-| **6** | **Mortise Handles** | **53** | `AMH-01` to `AMC-04` | [`motise-handles.pdf`](assets/pdf/motise-handles.pdf) |
-| **7** | **Glass Door Handles** | **21** | `APH-01` to `APH-21` | [`glass-door-handles.pdf`](assets/pdf/glass-door-handles.pdf) |
-| **8** | **Glass Connectors** | **22** | `AGC-01` to `AGH-02` | [`glass-connectors.pdf`](assets/pdf/glass-connectors.pdf) |
-| **9** | **Floor Spring & Door Closer** | **4** | `AFS-01`, `ADC-01`, `Top Pivot`, `Bottom Strip` | [`floor-spring-door-closer.pdf`](assets/pdf/floor-spring-door-closer.pdf) |
+| **1** | **Spider Fittings** | **23** | `ASF-01` to `ASP-01` | [`spider-fittings.pdf`](public/assets/pdf/spider-fittings.pdf) |
+| **2** | **Canopy Fittings** | **5** | `ACF-01` to `ACF-05` | [`canopy-fittings.pdf`](public/assets/pdf/canopy-fittings.pdf) |
+| **3** | **Glass Door Sliding Folding Systems** | **23** | `AGSF-01` to `A-4` | [`glass-door-sliding-folding-system.pdf`](public/assets/pdf/glass-door-sliding-folding-system.pdf) |
+| **4** | **Shower Glass Fittings & Sliding Handles** | **24** | `ASDH-01` to `A-R-04` | [`shower-glass-fittings.pdf`](public/assets/pdf/shower-glass-fittings.pdf) |
+| **5** | **Patch Fittings** | **10** | `APF-01` to `APF-10` | [`patch-fittings.pdf`](public/assets/pdf/patch-fittings.pdf) |
+| **6** | **Mortise Handles** | **53** | `AMH-01` to `AMC-04` | [`motise-handles.pdf`](public/assets/pdf/motise-handles.pdf) |
+| **7** | **Glass Door Handles** | **21** | `APH-01` to `APH-21` | [`glass-door-handles.pdf`](public/assets/pdf/glass-door-handles.pdf) |
+| **8** | **Glass Connectors** | **22** | `AGC-01` to `AGH-02` | [`glass-connectors.pdf`](public/assets/pdf/glass-connectors.pdf) |
+| **9** | **Floor Spring & Door Closer** | **4** | `AFS-01`, `ADC-01`, `Top Pivot`, `Bottom Strip` | [`floor-spring-door-closer.pdf`](public/assets/pdf/floor-spring-door-closer.pdf) |
 | 📊 | **TOTAL CATALOG SIZE** | **185** | *Complete Technical Coverage* | **9 Official PDFs (25.7 MB)** |
 
 ---
@@ -98,7 +98,7 @@ All products are manufactured under rigorous **ISO 9001:2008** quality standards
 | **Typography** | Google Fonts | IBM Plex Sans (Content), IBM Plex Mono (Codes), Archivo (Headings) |
 | **Styling** | Vanilla CSS3 | Custom design system with CSS tokens, fluid grid, and zero external CSS bloat |
 | **Routing** | Custom Hash Router | GitHub Pages-compatible routing (`#products`, `#company`, `#quality`, etc.) |
-| **Data Engine** | JSON & Universal JS | Full offline datasets (`alfa_hardware_data.json` & `.js`) |
+| **Data Engine** | JSON & Universal JS | Full offline dataset (`alfa_hardware_data.js`) |
 | **CI/CD** | GitHub Actions | Automated deployment pipeline via `.github/workflows/deploy.yml` |
 
 ---
@@ -110,8 +110,8 @@ Alfa-Industries/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml              # Automated GitHub Pages CI/CD workflow
-├── assets/                         # 395 offline media assets (~25.7 MB)
-│   ├── images/                     # Logos, 10 hero sliders, feature highlights
+├── public/assets/                  # 388 offline media assets served by Vite
+│   ├── images/                     # Logos, logo & hero slider images
 │   ├── canopy-fittings/            # Canopy fitting photography
 │   ├── floor-spring-and-door-closer/ # Floor spring & door closer photos
 │   ├── glass-connectors/           # Glass connector hardware
@@ -140,7 +140,6 @@ Alfa-Industries/
 │   ├── pages/                      # Application route views
 │   │   ├── CompanyPage.jsx         # About Us & Manufacturing Infrastructure
 │   │   ├── ContactPage.jsx         # Interactive feedback & enquiry forms
-│   │   ├── DownloadsPage.jsx       # Catalog download cards & links
 │   │   ├── HomePage.jsx            # Hero carousel, featured categories, trust stats
 │   │   ├── NotFoundPage.jsx        # 404 fallback page
 │   │   ├── ProductsPage.jsx        # Filterable catalog grid with category tabs
@@ -148,8 +147,6 @@ Alfa-Industries/
 │   ├── App.jsx                     # Root application container & global modals
 │   ├── index.css                   # Custom architectural design system (~53 kB)
 │   └── main.jsx                    # React 18 DOM mount point
-├── public/                         # Static public assets
-├── alfa_hardware_data.json         # 100% complete verbatim product dataset (~995 KB)
 ├── alfa_hardware_data.js           # Universal ESM/CommonJS/Browser data access API (~1.0 MB)
 ├── index.html                      # HTML5 entry with meta SEO & Open Graph tags
 ├── package.json                    # Project dependencies & scripts
@@ -206,7 +203,7 @@ npm run preview
 
 ## 📦 Dataset & Developer API
 
-The repository provides dual-format access to the complete Alfa Hardware product dataset via **`alfa_hardware_data.json`** and **`alfa_hardware_data.js`**. You can consume it in any JavaScript or Node.js environment.
+The repository provides dual-format access to the complete Alfa Hardware product dataset via **`alfa_hardware_data.js`**. You can consume it in any JavaScript or Node.js environment.
 
 ### 1. React / Next.js / Vite (ESM)
 
@@ -229,8 +226,6 @@ console.log(spiderFitting.images.fullLocal);
 
 ```javascript
 const { AlfaHardwareAPI } = require('./alfa_hardware_data.js');
-// or load raw JSON
-const data = require('./alfa_hardware_data.json');
 
 const allSpiderFittings = AlfaHardwareAPI.getProductsByCategory('spider-fittings');
 console.log(`Found ${allSpiderFittings.length} spider fittings.`);

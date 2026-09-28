@@ -36,7 +36,6 @@ export default function Footer() {
             <ul className="footer-links">
               <li><a href={href('/company')}>About & infrastructure</a></li>
               <li><a href={href('/quality')}>Quality & mission</a></li>
-              <li><a href={href('/catalogues')}>Download catalogues</a></li>
               <li><a href={href('/contact')}>Request a quote</a></li>
             </ul>
           </div>

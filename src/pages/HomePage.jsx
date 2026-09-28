@@ -123,15 +123,11 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
             <div className="hero-actions">
               <a href={href('/products')} className="btn btn-light btn-lg">
                 Explore products <ArrowRight size={17} />
-              </a>
-              <a href={href('/catalogues')} className="btn btn-ghost-light btn-lg">
-                <Download size={17} /> Download catalogues
-              </a>
-            </div>
+              </a>            </div>
           </div>
 
-          {/* Right Column: Floating Glassmorphic Slide Controller & Project Spotlight (Not a separate image box) */}
-          {/* <div className="hero-spotlight-card">
+          {/* Right Column: Floating Glassmorphic Slide Controller & Project Spotlight */}
+          <div className="hero-spotlight-card">
             <div className="hero-spotlight-top">
               <span className="hero-spotlight-badge">
                 <span className="hero-spotlight-dot" />
@@ -192,7 +188,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
                 </button>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* Credentials Strip with Translucent Glassmorphic Backdrop */}
