@@ -14610,7 +14610,7 @@ const AlfaHardwareAPI = {
 };
 
 // Universal export
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = { alfaHardwareData, AlfaHardwareAPI };
 }
 

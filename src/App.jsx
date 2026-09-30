@@ -13,7 +13,7 @@ import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 import { useRoute, href, navigate } from './lib/router';
-import { getProduct, categoryName, productAlt, CATEGORY_META } from './data/catalog';
+import { getProduct, categoryName, productAlt, CATEGORY_META, asset } from './data/catalog';
 
 const STORAGE_KEY = 'alfa-enquiry-v1';
 
@@ -28,10 +28,10 @@ function loadEnquiry() {
 
 const PAGE_TITLES = {
   '': 'Stainless Steel Architectural Hardware',
-  products: 'Products',
-  company: 'Company',
-  quality: 'Quality',
-  contact: 'Contact & Enquiry'
+  products: 'Products Catalog',
+  company: 'About Alfa Industries',
+  quality: 'Quality Standards & Testing',
+  contact: 'Contact & Quotation Enquiry'
 };
 
 const PAGE_DESCRIPTIONS = {
@@ -75,6 +75,8 @@ export default function App() {
   useEffect(() => {
     let title = PAGE_TITLES[page] ?? 'Page not found';
     let description = PAGE_DESCRIPTIONS[page] ?? PAGE_DESCRIPTIONS[''];
+    let imageUrl = '';
+
     if (page === 'products' && route.segments[1]) {
       title = categoryName(route.segments[1]);
       description = `HART ${title} by Alfa Industries, Rajkot. ${CATEGORY_META[route.segments[1]]?.description || ''}`.trim();
@@ -82,10 +84,85 @@ export default function App() {
     if (activeProduct) {
       title = `${activeProduct.code} ${activeProduct.title}`;
       description = `${productAlt(activeProduct)}. Manufactured by Alfa Industries, Rajkot, India.`;
+      const imgPath = activeProduct.images?.fullLocal || activeProduct.images?.thumbnailLocal;
+      if (imgPath) {
+        imageUrl = window.location.origin + asset(imgPath);
+      }
     }
-    document.title = `${title} | HART by Alfa Industries`;
+
+    const fullTitle = `${title} | HART by Alfa Industries`;
+    document.title = fullTitle;
     document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-  }, [page, route.segments, activeProduct]);
+
+    // Dynamic canonical URL
+    const canonical = window.location.origin + window.location.pathname + (route.query.p ? `?p=${encodeURIComponent(route.query.p)}` : '');
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical);
+
+    // Dynamic Open Graph & Twitter Cards
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', fullTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical);
+    if (imageUrl) {
+      document.querySelector('meta[property="og:image"]')?.setAttribute('content', imageUrl);
+      document.querySelector('meta[property="og:image:secure_url"]')?.setAttribute('content', imageUrl);
+      document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', imageUrl);
+    }
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', fullTitle);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
+
+    // Dynamic Schema.org JSON-LD for rich snippets
+    let dynamicLd = null;
+    if (activeProduct) {
+      dynamicLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: `HART ${activeProduct.code} ${activeProduct.title}`,
+        sku: activeProduct.code,
+        mpn: activeProduct.code,
+        image: imageUrl || undefined,
+        description,
+        brand: { '@type': 'Brand', name: 'HART' },
+        manufacturer: {
+          '@type': 'Organization',
+          name: 'Alfa Industries',
+          url: window.location.origin + href('/')
+        },
+        category: categoryName(activeProduct.categoryId),
+        material: activeProduct.specifications?.Material || 'AISI 304 / 316 Stainless Steel',
+        offers: {
+          '@type': 'Offer',
+          url: canonical,
+          priceCurrency: 'INR',
+          availability: 'https://schema.org/InStock',
+          itemCondition: 'https://schema.org/NewCondition'
+        }
+      };
+    } else if (page === 'products' && route.segments[1]) {
+      const catName = categoryName(route.segments[1]);
+      dynamicLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: window.location.origin + href('/') },
+          { '@type': 'ListItem', position: 2, name: 'Products', item: window.location.origin + href('/products') },
+          { '@type': 'ListItem', position: 3, name: catName, item: canonical }
+        ]
+      };
+    }
+
+    let script = document.getElementById('dynamic-page-jsonld');
+    if (dynamicLd) {
+      if (!script) {
+        script = document.createElement('script');
+        script.id = 'dynamic-page-jsonld';
+        script.type = 'application/ld+json';
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(dynamicLd);
+    } else if (script) {
+      script.remove();
+    }
+  }, [page, route.segments, route.query.p, activeProduct]);
 
   // "/" opens search
   useEffect(() => {
