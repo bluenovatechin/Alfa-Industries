@@ -1,6 +1,6 @@
 import React from 'react';
 import { Plus, Check } from 'lucide-react';
-import { decode, productImage, onImageError, shortMaterial, categoryName } from '../data/catalog';
+import { decode, productImage, productAlt, onImageError, shortMaterial, categoryName } from '../data/catalog';
 
 export default function ProductCard({ product, onOpen, inEnquiry, onToggleEnquiry, showCategory = false }) {
   const specs = product.specifications || {};
@@ -13,7 +13,7 @@ export default function ProductCard({ product, onOpen, inEnquiry, onToggleEnquir
       <button className="product-card-media" onClick={() => onOpen(product.code)} aria-label={`View ${product.code} ${title}`}>
         <img
           src={productImage(product)}
-          alt=""
+          alt={productAlt(product)}
           loading="lazy"
           onError={onImageError(product)}
         />

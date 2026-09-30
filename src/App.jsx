@@ -13,7 +13,7 @@ import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 import { useRoute, href, navigate } from './lib/router';
-import { getProduct, categoryName } from './data/catalog';
+import { getProduct, categoryName, productAlt, CATEGORY_META } from './data/catalog';
 
 const STORAGE_KEY = 'alfa-enquiry-v1';
 
@@ -32,6 +32,14 @@ const PAGE_TITLES = {
   company: 'Company',
   quality: 'Quality',
   contact: 'Contact & Enquiry'
+};
+
+const PAGE_DESCRIPTIONS = {
+  '': 'Alfa Industries, Rajkot, manufactures HART architectural hardware in AISI 316 / 304 stainless steel: spider and patch fittings, glass connectors, door handles, sliding systems and floor springs. ISO 9001:2008 certified.',
+  products: 'Browse 185 HART stainless steel architectural hardware products: spider fittings, canopy fittings, patch fittings, glass connectors, glass door handles, mortise handles, sliding systems and floor springs.',
+  company: 'Alfa Industries, Rajkot: in-house manufacturer of HART stainless steel architectural hardware with VMC, CNC, pressing, grinding and TIG welding facilities.',
+  quality: 'HART hardware is manufactured under one roof to ISO 9001:2008 quality standards, from tested AISI 316 / 304 stainless steel.',
+  contact: 'Contact Alfa Industries, Shapar (Veraval), Rajkot, Gujarat, for HART stainless steel architectural hardware enquiries and quotations.'
 };
 
 export default function App() {
@@ -66,9 +74,17 @@ export default function App() {
 
   useEffect(() => {
     let title = PAGE_TITLES[page] ?? 'Page not found';
-    if (page === 'products' && route.segments[1]) title = categoryName(route.segments[1]);
-    if (activeProduct) title = `${activeProduct.code} ${activeProduct.title}`;
+    let description = PAGE_DESCRIPTIONS[page] ?? PAGE_DESCRIPTIONS[''];
+    if (page === 'products' && route.segments[1]) {
+      title = categoryName(route.segments[1]);
+      description = `HART ${title} by Alfa Industries, Rajkot. ${CATEGORY_META[route.segments[1]]?.description || ''}`.trim();
+    }
+    if (activeProduct) {
+      title = `${activeProduct.code} ${activeProduct.title}`;
+      description = `${productAlt(activeProduct)}. Manufactured by Alfa Industries, Rajkot, India.`;
+    }
     document.title = `${title} | HART by Alfa Industries`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
   }, [page, route.segments, activeProduct]);
 
   // "/" opens search

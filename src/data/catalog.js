@@ -165,6 +165,14 @@ export function productImage(product, size = 'full') {
   return asset(images.fullLocal || images.thumbnailLocal) || images.fullOnline;
 }
 
+// Descriptive alt text so search engines (Google Images / Lens) know what each photo shows
+export function productAlt(product) {
+  const material = product.specifications?.Material;
+  return [`HART ${product.code} ${decode(product.title)}`, material, categoryName(product.categoryId)]
+    .filter(Boolean)
+    .join(' – ');
+}
+
 export function onImageError(product) {
   return (e) => {
     const fallback = product.images.fullOnline;

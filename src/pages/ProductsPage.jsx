@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, LayoutGrid, List, Download, X, SlidersHorizontal, Plus, Check, ChevronRight, ArrowLeft } from 'lucide-react';
 import { href } from '../lib/router';
 import {
-  getCategories, getProducts, decode, productImage, onImageError, shortMaterial, categoryName,
+  getCategories, getProducts, decode, productImage, productAlt, onImageError, shortMaterial, categoryName,
   materialGroup, hasFinish, MATERIAL_FILTERS, FINISH_FILTERS, TOTAL_PRODUCTS, asset
 } from '../data/catalog';
 import ProductCard from '../components/ProductCard';
@@ -364,7 +364,7 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
                         <tr key={p.code}>
                           <td className="td-thumb">
                             <button className="table-thumb" onClick={() => openProduct(p.code)} aria-label={`View ${p.code}`}>
-                              <img src={productImage(p, 'thumb')} alt="" loading="lazy" onError={onImageError(p)} />
+                              <img src={productImage(p, 'thumb')} alt={productAlt(p)} loading="lazy" onError={onImageError(p)} />
                             </button>
                           </td>
                           <td className="code">{p.code}</td>

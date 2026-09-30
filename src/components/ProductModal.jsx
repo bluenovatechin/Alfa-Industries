@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, Check, Plus, Download, Send, ChevronLeft, ChevronRight, Link2, ShieldCheck } from 'lucide-react';
 import { AlfaHardwareAPI } from '../data/alfaData';
 import { href } from '../lib/router';
-import { decode, productImage, onImageError, categoryName, asset } from '../data/catalog';
+import { decode, productImage, productAlt, onImageError, categoryName, asset } from '../data/catalog';
 
 export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, onToggleEnquiry }) {
   const closeRef = useRef(null);
@@ -34,6 +34,28 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
   }, [product]);
 
   useEffect(() => setCopied(false), [product]);
+
+  // Product structured data (schema.org) so search engines can tie the photo to the product
+  useEffect(() => {
+    if (!product) return;
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: `${product.code} ${decode(product.title)}`,
+      sku: product.code,
+      image: new URL(productImage(product), window.location.origin).href,
+      description: productAlt(product),
+      category: categoryName(product.categoryId),
+      material: product.specifications?.Material,
+      brand: { '@type': 'Brand', name: 'HART' },
+      manufacturer: { '@type': 'Organization', name: 'Alfa Industries' },
+      url: window.location.href
+    });
+    document.head.appendChild(script);
+    return () => script.remove();
+  }, [product]);
 
   if (!product) return null;
 
@@ -87,7 +109,7 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
 
         <div className="product-modal-grid">
           <div className="product-modal-media">
-            <img src={productImage(product)} alt={`${product.code} ${title}`} onError={onImageError(product)} />
+            <img src={productImage(product)} alt={productAlt(product)}onError={onImageError(product)} />
             <p className="media-note">Refer to the range catalogue for complete technical drawings.</p>
           </div>
 

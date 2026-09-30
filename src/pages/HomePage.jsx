@@ -58,7 +58,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
             <div key={img.src} className={`hero-bg-slide-item ${i === slideIndex ? 'active' : ''}`}>
               <img
                 src={asset(img.src)}
-                alt=""
+                alt={img.label}
                 className="hero-bg-full-img"
                 loading={i === 0 ? 'eager' : 'lazy'}
               />
@@ -169,7 +169,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
             {categories.map((cat) => (
               <a key={cat.id} href={href('/products/' + cat.id)} className="range-card">
                 <span className="range-media">
-                  {cat.cover && <img src={productImage(cat.cover)} alt="" loading="lazy" onError={onImageError(cat.cover)} />}
+                  {cat.cover && <img src={productImage(cat.cover)} alt={`HART ${cat.shortName} in stainless steel`} loading="lazy" onError={onImageError(cat.cover)} />}
                 </span>
                 <span className="range-body">
                   <span className="range-top">
@@ -203,7 +203,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
           <div className="application-grid">
             {APPLICATIONS.map((app) => (
               <a key={app.title} href={href('/products/' + app.categoryId)} className="application-card">
-                <img src={asset(app.image)} alt="" loading="lazy" />
+                <img src={asset(app.image)} alt={`${app.title} – HART stainless steel hardware`} loading="lazy" />
                 <span className="application-label">
                   {app.title}
                   <ArrowRight size={16} />
