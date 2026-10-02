@@ -6,7 +6,7 @@ import {
 import { href, navigate } from '../lib/router';
 import {
   COPY, APPLICATIONS, HERO_IMAGES, FEATURED_CODES, PROCESS, MACHINES,
-  getCategories, getProduct, productImage, onImageError, asset, TOTAL_PRODUCTS, TOTAL_CATEGORIES, getCatalogues
+  getCategories, getProduct, productImage, onImageError, asset, photoSrcSet, TOTAL_PRODUCTS, TOTAL_CATEGORIES, getCatalogues
 } from '../data/catalog';
 import ProductCard from '../components/ProductCard';
 import CtaBand from '../components/CtaBand';
@@ -22,6 +22,19 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
   // Hero slide state synchronized across background and gallery
   const [slideIndex, setSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  // Only the first slide loads with the page; the rest wait until the page has finished loading
+  const [slidesReady, setSlidesReady] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    const ready = () => { timer = setTimeout(() => setSlidesReady(true), 1500); };
+    if (document.readyState === 'complete') ready();
+    else window.addEventListener('load', ready, { once: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('load', ready);
+    };
+  }, []);
 
   const nextSlide = useCallback(() => {
     setSlideIndex((i) => (i + 1) % HERO_IMAGES.length);
@@ -33,10 +46,10 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
 
   useEffect(() => {
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (isPaused || reduced) return;
+    if (isPaused || reduced || !slidesReady) return;
     const t = setTimeout(nextSlide, SLIDE_MS);
     return () => clearTimeout(t);
-  }, [slideIndex, isPaused, nextSlide]);
+  }, [slideIndex, isPaused, slidesReady, nextSlide]);
 
   const submitSearch = (e) => {
     e.preventDefault();
@@ -54,13 +67,17 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
       >
         {/* Full-bleed background slideshow: stacked slides crossfade with a slow zoom */}
         <div className="hero-bg-slider" aria-hidden="true">
-          {HERO_IMAGES.map((img, i) => (
+          {HERO_IMAGES.map((img, i) => (i === 0 || slidesReady) && (
             <div key={img.src} className={`hero-bg-slide-item ${i === slideIndex ? 'active' : ''}`}>
               <img
                 src={asset(img.src)}
-                alt={img.label}
+                srcSet={photoSrcSet(img.src)}
+                sizes="100vw"
+                alt=""
                 className="hero-bg-full-img"
-                loading={i === 0 ? 'eager' : 'lazy'}
+                width="972"
+                height="462"
+                fetchpriority={i === 0 ? 'high' : 'low'}
               />
             </div>
           ))}
@@ -169,7 +186,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
             {categories.map((cat) => (
               <a key={cat.id} href={href('/products/' + cat.id)} className="range-card">
                 <span className="range-media">
-                  {cat.cover && <img src={productImage(cat.cover)} alt={`HART ${cat.shortName} in stainless steel`} loading="lazy" onError={onImageError(cat.cover)} />}
+                  {cat.cover && <img src={productImage(cat.cover, 'thumb')} alt={`HART ${cat.shortName} in stainless steel`} loading="lazy" decoding="async" width="450" height="311" onError={onImageError(cat.cover)} />}
                 </span>
                 <span className="range-body">
                   <span className="range-top">
@@ -203,7 +220,7 @@ export default function HomePage({ openProduct, isInEnquiry, toggleEnquiry }) {
           <div className="application-grid">
             {APPLICATIONS.map((app) => (
               <a key={app.title} href={href('/products/' + app.categoryId)} className="application-card">
-                <img src={asset(app.image)} alt={`${app.title} – HART stainless steel hardware`} loading="lazy" />
+                <img src={asset(app.image)} srcSet={photoSrcSet(app.image)} sizes="(min-width: 1024px) 33vw, 50vw" alt={`${app.title} – HART stainless steel hardware`} loading="lazy" decoding="async" width="972" height="462" />
                 <span className="application-label">
                   {app.title}
                   <ArrowRight size={16} />

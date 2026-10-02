@@ -138,7 +138,10 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
         {category && CATEGORY_META[category.id]?.uses && (
           <div className="range-seo">
             <p><strong>Applications:</strong> {CATEGORY_META[category.id].uses}</p>
-            <p><strong>Also searched as:</strong> {CATEGORY_META[category.id].aka.join(' · ')}</p>
+            <details>
+              <summary>Also searched as</summary>
+              <p>{CATEGORY_META[category.id].aka.join(' · ')}</p>
+            </details>
           </div>
         )}
       </PageHeader>
@@ -311,6 +314,7 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
               </div>
             ) : (<>
 
+            <h2 className="sr-only">{category ? `${category.name} products` : 'All products'}</h2>
             <div className="results-bar">
               <span className="results-count" aria-live="polite">
                 Showing <strong>{filtered.length}</strong> of {inScope.length} products

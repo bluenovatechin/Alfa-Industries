@@ -23,15 +23,17 @@ export default function ProductCard({ product, onOpen, inEnquiry, onToggleEnquir
         href={productUrl}
         className="product-card-media"
         onClick={handleOpen}
-        aria-label={`View ${product.code} ${title}`}
       >
         <img
           src={productImage(product)}
+          srcSet={`${productImage(product, 'thumb')} 450w, ${productImage(product)} 800w`}
+          sizes="(min-width: 1024px) 260px, (min-width: 640px) 33vw, 50vw"
           alt={productAlt(product)}
           loading="lazy"
+          decoding="async"
           onError={onImageError(product)}
-          width="400"
-          height="400"
+          width="450"
+          height="311"
         />
       </a>
 

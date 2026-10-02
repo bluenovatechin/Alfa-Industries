@@ -9,7 +9,7 @@
 
   --text: #0f1419;
   --text-2: #424e5d;
-  --text-3: #6b7785;
+  --text-3: #5f6b79;
 
   --bg: #ffffff;
   --bg-tint: #f6f8fa;
@@ -29,12 +29,12 @@
 
   --on-dark: #f8fafc;
   --on-dark-2: #94a3b8;
-  --on-dark-3: #64748b;
+  --on-dark-3: #7d8ba1;
   --on-dark-line: rgba(255, 255, 255, 0.12);
 
-  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --font-display: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Roboto Mono', Menlo, Consolas, monospace;
 
   --r-xs: 4px;
   --r-sm: 6px;
@@ -654,6 +654,7 @@ a.utility-item:hover {
 
 .brand-logo img {
   width: 104px;
+  height: auto;
   max-width: none;
 }
 
@@ -5129,7 +5130,7 @@ kbd {
 }
 
 .footer-contact .muted {
-  color: #64748b;
+  color: #7d8ba1;
 }
 
 .footer-bottom {
@@ -5142,7 +5143,7 @@ kbd {
   padding-top: 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.875rem;
-  color: #64748b;
+  color: #7d8ba1;
 }
 
 .footer-bottom-link {
@@ -5554,4 +5555,1099 @@ kbd {
 .range-seo strong {
   color: var(--text);
   font-weight: 600;
+}
+
+/* =====================================================================
+   Mobile-first layer
+   Most visitors are on phones, so the rules below define the phone layout
+   first; min-width queries then scale it up for tablets and desktops.
+   Kept last in the file so it takes precedence over the older rules above.
+   ===================================================================== */
+
+:root {
+  /* Fluid spacing: phone value -> desktop value */
+  --space-section: clamp(44px, 6vw + 20px, 88px);
+  --space-head: clamp(20px, 2vw + 12px, 40px);
+  --gutter: 16px;
+  --tap: 38px;
+}
+
+@media (min-width: 641px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --tap: 44px;
+  }
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  font-optical-sizing: auto;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-feature-settings: 'cv11', 'ss03';
+}
+
+button,
+a,
+input,
+select,
+summary {
+  touch-action: manipulation;
+}
+
+.container {
+  padding: 0 var(--gutter);
+}
+
+/* ---------- Type ---------- */
+
+.section-title {
+  font-size: clamp(1.5rem, 1.1rem + 2vw, 2.375rem);
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+}
+
+.section-title-sm {
+  font-size: clamp(1.3rem, 1.05rem + 1.2vw, 1.75rem);
+}
+
+.section-lead,
+.page-lead {
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  line-height: 1.6;
+}
+
+.page-title {
+  font-size: clamp(1.75rem, 1.2rem + 2.8vw, 3rem);
+  line-height: 1.12;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 1.25rem + 3.8vw, 3.625rem);
+  line-height: 1.08;
+}
+
+.hero-lead {
+  font-size: clamp(1rem, 0.94rem + 0.35vw, 1.125rem);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+/* Inputs at 16px stop iOS Safari from zooming the page on focus */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  padding: var(--space-section) 0;
+}
+
+.section-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: var(--space-head);
+}
+
+@media (min-width: 768px) {
+  .section-head {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 24px;
+  }
+}
+
+.page-header {
+  padding: 16px 0 28px;
+}
+
+.page-header-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .page-header {
+    padding: 28px 0 48px;
+  }
+
+  .page-header-row {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 32px;
+    margin-top: 32px;
+  }
+}
+
+/* ---------- Buttons & tap targets ---------- */
+
+.btn {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.btn-sm {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 0.8125rem;
+  border-radius: 6px;
+  gap: 4px;
+}
+
+.btn-lg {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 0.9375rem;
+  border-radius: 8px;
+  gap: 6px;
+}
+
+.enquiry-toggle {
+  height: 36px;
+  min-height: 36px;
+  font-size: 0.8125rem;
+  padding: 0 12px;
+  border-radius: 8px;
+  gap: 5px;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 8px;
+}
+
+.icon-btn-sm {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 6px;
+}
+
+@media (min-width: 768px) {
+  .btn {
+    min-height: 44px;
+    padding: 0 20px;
+    font-size: 0.9375rem;
+    border-radius: 10px;
+    gap: 8px;
+  }
+
+  .btn-sm {
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .btn-lg {
+    min-height: 52px;
+    padding: 0 26px;
+    font-size: 1rem;
+    border-radius: 12px;
+  }
+
+  .enquiry-toggle {
+    height: 40px;
+    min-height: 40px;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    padding: 0 14px;
+  }
+
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 8px;
+  }
+}
+
+/* Hover lifts make no sense on touch screens and leave "stuck" states */
+@media (hover: none) {
+  .btn:hover,
+  .range-card:hover,
+  .product-card:hover,
+  .application-card:hover {
+    transform: none;
+  }
+
+  .range-card:hover .range-media img,
+  .product-card:hover .product-card-media img,
+  .application-card:hover img {
+    transform: none;
+  }
+}
+
+/* ---------- Hero ---------- */
+
+/* Paint the headline immediately: the fade-in delays pushed back the largest paint */
+.hero-title,
+.hero-lead,
+.hero-search,
+.hero-actions,
+.hero-eyebrow-animated,
+.hero-credentials-glass {
+  animation: none;
+}
+
+.hero {
+  min-height: 0;
+  padding-top: 36px;
+}
+
+.hero-search {
+  margin-top: 14px;
+  padding: 3px 3px 3px 12px;
+  border-radius: 10px;
+  gap: 6px;
+}
+
+.hero-search input {
+  height: 36px;
+  font-size: 16px;
+}
+
+.hero-search .btn {
+  min-height: 36px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+  border-radius: 7px;
+}
+
+.hero-actions {
+  margin-top: 12px;
+  gap: 8px;
+}
+
+.hero-actions .btn {
+  width: 100%;
+  min-height: 38px;
+  font-size: 0.875rem;
+  padding: 0 16px;
+}
+
+@media (min-width: 641px) {
+  .hero-search {
+    margin-top: 24px;
+    padding: 5px 5px 5px 16px;
+    border-radius: 12px;
+  }
+
+  .hero-search input {
+    height: 44px;
+    font-size: 0.9375rem;
+  }
+
+  .hero-search .btn {
+    min-height: 44px;
+    height: 44px;
+    padding: 0 18px;
+    font-size: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .hero-actions {
+    margin-top: 16px;
+  }
+
+  .hero-actions .btn {
+    width: auto;
+    min-height: 44px;
+    font-size: 0.9375rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hero {
+    min-height: 640px;
+    padding-top: 88px;
+  }
+}
+
+/* Credentials: compact 2 x 2 grid on phones instead of four stacked rows */
+@media (max-width: 767px) {
+  .hero-credentials-glass {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin-top: 28px;
+    padding: 0;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 14px 14px 0 0;
+  }
+
+  .credentials.hero-credentials-glass li,
+  .credentials.hero-credentials-glass li:nth-child(n) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding: 16px 14px;
+    border: 0;
+    background: rgba(13, 17, 23, 0.94);
+  }
+
+  .hero-credentials-glass strong {
+    font-size: 0.9375rem;
+  }
+
+  .hero-credentials-glass span {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .hero-credentials-glass .cred-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Phones & tablets: drop the GPU-heavy effects (blurred glow, frosted glass, slow zoom).
+   They cost seconds of main-thread and paint time on mid-range Android phones. */
+@media (max-width: 1024px) {
+  .hero-bg-glow,
+  .hero-edge-nav {
+    display: none;
+  }
+
+  /* An endless box-shadow pulse repaints the whole hero (photo included) every frame */
+  .hero-pulse-dot {
+    animation: none;
+  }
+
+  .hero-bg-full-img,
+  .hero-bg-slide-item.active .hero-bg-full-img {
+    transform: none;
+    transition: none;
+    will-change: auto;
+    filter: none;
+  }
+
+  .hero-bg-overlay {
+    background: linear-gradient(180deg, rgba(11, 14, 18, 0.72) 0%, rgba(11, 14, 18, 0.62) 55%, rgba(11, 14, 18, 0.9) 100%);
+  }
+
+  .hero-credentials-glass,
+  .hero-spotlight-card,
+  .navbar,
+  .modal-backdrop,
+  .drawer-backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* ---------- Product ranges (home) ---------- */
+
+/* Phones: compact rows (thumbnail + text) instead of tall cards */
+@media (max-width: 599px) {
+  .range-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .range-card {
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 14px;
+  }
+
+  .range-media {
+    flex: 0 0 104px;
+    aspect-ratio: auto;
+    padding: 10px;
+    border-bottom: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  .range-body {
+    padding: 14px 16px;
+    justify-content: center;
+  }
+
+  .range-name {
+    font-size: 1.0625rem;
+  }
+
+  .range-desc {
+    margin-top: 4px;
+    flex: none;
+    font-size: 0.875rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .range-link {
+    margin-top: 8px;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ---------- Applications ---------- */
+
+@media (max-width: 767px) {
+  .application-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .application-card {
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+  }
+
+  .application-label {
+    padding: 40px 12px 12px;
+    font-size: 0.9375rem;
+    line-height: 1.25;
+  }
+
+  .application-label svg {
+    display: none;
+  }
+}
+
+/* ---------- Product cards ---------- */
+
+/* Phones: two compact cards per row instead of one card per screen */
+@media (max-width: 639px) {
+  .product-grid,
+  .product-grid-3 {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .product-card {
+    border-radius: 14px;
+  }
+
+  .product-card-media {
+    aspect-ratio: 4 / 3;
+    padding: 8px;
+  }
+
+  .product-card-body {
+    padding: 10px 10px 12px;
+  }
+
+  .product-card-cat {
+    display: none;
+  }
+
+  .product-card-meta .code {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+
+  .product-card-title {
+    margin: 6px 0 8px;
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+
+  .product-card-specs {
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+  }
+
+  .product-card-specs > div {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .product-card-specs dt {
+    display: none;
+  }
+
+  .product-card-specs dd {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-2);
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+
+  .enquiry-toggle {
+    height: 32px;
+    min-height: 32px;
+    font-size: 0.75rem;
+    padding: 0 8px;
+    gap: 4px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  .enquiry-toggle svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.product-card-title a {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--ink);
+}
+
+/* ---------- Catalogue toolbar ---------- */
+
+@media (max-width: 639px) {
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .toolbar-search {
+    flex-basis: 100%;
+    height: 38px;
+    min-height: 38px;
+    padding: 0 10px;
+    border-radius: 8px;
+    gap: 8px;
+  }
+
+  .toolbar-search input {
+    font-size: 16px;
+    height: 36px;
+  }
+
+  .toolbar-search svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Filters + sort share one row; the grid/list toggle is hidden (grid suits phones) */
+  .toolbar .filters-toggle,
+  .toolbar-sort {
+    flex: 1 1 0;
+    order: 0;
+  }
+
+  .toolbar-sort select,
+  .filters-toggle {
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    font-size: 0.8125rem;
+    border-radius: 8px;
+  }
+
+  .filters-toggle {
+    padding: 0 10px;
+    gap: 5px;
+  }
+
+  .filters-toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .toolbar-sort select {
+    padding: 0 24px 0 10px;
+  }
+
+  .segmented {
+    display: none;
+  }
+}
+
+/* Range page: applications line + collapsible alternate names */
+.range-seo details {
+  font-size: 0.875rem;
+}
+
+.range-seo summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.range-seo details p {
+  margin-top: 4px;
+}
+
+/* The native disclosure arrow is lost with display:flex, so draw a +/- indicator */
+.range-seo summary {
+  list-style: none;
+  gap: 8px;
+}
+
+.range-seo summary::-webkit-details-marker {
+  display: none;
+}
+
+.range-seo summary::after {
+  content: '+';
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-2);
+}
+
+.range-seo details[open] summary::after {
+  content: '\2212';
+}
+
+/* ---------- Company: machinery ---------- */
+
+@media (max-width: 639px) {
+  /* Filter chips become one swipeable row instead of five stacked rows */
+  .machine-cat-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 calc(-1 * var(--gutter)) 16px;
+    padding: 0 var(--gutter) 4px;
+    scrollbar-width: none;
+  }
+
+  .machine-cat-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .machine-cat-filters .range-chip {
+    flex: none;
+    height: 32px;
+    min-height: 32px;
+    font-size: 0.75rem;
+    padding: 0 10px;
+    border-radius: 6px;
+    gap: 4px;
+  }
+
+  .machine-enhanced-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .machine-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .machine-card-head {
+    margin-bottom: 6px;
+  }
+
+  .machine-badge {
+    display: none;
+  }
+
+  .machine-name {
+    font-size: 1.0625rem;
+  }
+
+  .machine-spec-highlight {
+    font-size: 0.75rem;
+    margin-top: 6px;
+  }
+
+  .machine-capacity-line,
+  .machine-desc {
+    margin-top: 8px;
+    font-size: 0.875rem;
+  }
+
+  .machine-parts-box {
+    margin-top: 10px;
+    padding-top: 10px;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ---------- Footer ---------- */
+
+@media (max-width: 767px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 16px;
+  }
+
+  .footer-brand,
+  .footer-grid > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .footer-heading {
+    margin-bottom: 6px;
+    font-size: 0.8125rem;
+  }
+
+  .footer-links li + li {
+    margin-top: 0;
+  }
+
+  .footer-links a {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    font-size: 0.875rem;
+  }
+
+  .footer-contact li {
+    margin-bottom: 2px;
+    align-items: center;
+    min-height: 36px;
+    font-size: 0.875rem;
+  }
+}
+
+/* ---------- Mobile Form Inputs & Button Proportion Tuning ---------- */
+
+@media (max-width: 640px) {
+  /* Contact and enquiry form card */
+  .form-card {
+    padding: 18px 14px;
+    border-radius: 12px;
+  }
+
+  .form-title {
+    font-size: 1.35rem;
+    margin-bottom: 2px;
+  }
+
+  .form-note {
+    font-size: 0.8125rem;
+    margin-top: 3px;
+    margin-bottom: 14px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .field {
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .field-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .field input,
+  .field select {
+    height: 38px;
+    min-height: 38px;
+    padding: 8px 11px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  .field textarea {
+    min-height: 84px;
+    padding: 8px 11px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  .field-error {
+    font-size: 0.75rem;
+    margin-top: 2px;
+  }
+
+  .form-card .btn {
+    min-height: 40px;
+    font-size: 0.875rem;
+    padding: 0 16px;
+    border-radius: 8px;
+  }
+
+  .form-products {
+    padding: 10px 12px;
+    margin: 4px 0 14px;
+    border-radius: 10px;
+  }
+
+  .form-products-head {
+    margin-bottom: 10px;
+  }
+
+  .form-products-head h3 {
+    font-size: 0.875rem;
+  }
+
+  .form-product-list li {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'thumb name name'
+      'qty qty remove';
+    align-items: center;
+    gap: 8px 10px;
+  }
+
+  .form-product-thumb {
+    width: 48px;
+    height: 36px;
+  }
+
+  .form-product-name strong {
+    font-size: 0.8125rem;
+  }
+
+  .form-product-name span {
+    font-size: 0.75rem;
+  }
+
+  /* Quantity buttons and input */
+  .qty {
+    border-radius: 6px;
+  }
+
+  .qty button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .qty button svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .qty input {
+    width: 34px;
+    height: 28px;
+    font-size: 0.8125rem;
+  }
+
+  /* Range and Filter chips */
+  .range-chip {
+    height: 32px;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    gap: 4px;
+  }
+
+  /* FAQ search */
+  .faq-search-box {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 8px;
+  }
+
+  .faq-search-box input {
+    height: 36px;
+    padding: 6px 12px 6px 32px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  .faq-search-icon {
+    width: 14px;
+    height: 14px;
+    left: 10px;
+  }
+
+  .faq-categories {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .faq-categories .range-chip {
+    height: 30px;
+    min-height: 30px;
+    font-size: 0.75rem;
+    padding: 0 10px;
+  }
+
+  /* Drawers and modals */
+  .drawer-header {
+    padding: 14px 16px;
+  }
+
+  .drawer-title {
+    font-size: 1.125rem;
+  }
+
+  .drawer-sub {
+    font-size: 0.8125rem;
+  }
+
+  .drawer-body {
+    padding: 12px 16px;
+  }
+
+  .drawer-footer {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .drawer-footer .btn {
+    min-height: 38px;
+    font-size: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .drawer-alt-buttons .btn {
+    min-height: 32px;
+    font-size: 0.75rem;
+    padding: 0 10px;
+    border-radius: 6px;
+  }
+
+  .enquiry-item {
+    padding: 10px 0;
+    gap: 10px 12px;
+  }
+
+  .enquiry-thumb {
+    width: 52px;
+    height: 40px;
+  }
+
+  /* Product Modal / Quick View */
+  .product-modal-grid {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .product-modal-actions {
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .product-modal-actions .btn {
+    min-height: 38px;
+    font-size: 0.875rem;
+    padding: 0 14px;
+    border-radius: 8px;
+  }
+
+  .product-modal-links {
+    margin-top: 14px;
+    padding-top: 12px;
+    gap: 8px 16px;
+    font-size: 0.8125rem;
+  }
+
+  /* Mobile menu buttons */
+  .mnav-search {
+    height: 38px;
+    font-size: 0.875rem;
+    padding: 0 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  .mnav-contact {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .mnav-contact .btn {
+    min-height: 38px;
+    font-size: 0.875rem;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
+
+  .mnav-link {
+    padding: 8px 10px;
+    gap: 10px;
+    border-radius: 8px;
+  }
+
+  .mnav-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+  }
+
+  /* Search modal */
+  .search-bar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .search-bar input {
+    font-size: 16px;
+    height: 34px;
+  }
+
+  .search-result {
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .search-thumb {
+    width: 48px;
+    height: 34px;
+  }
+
+  .search-all {
+    padding: 9px 12px;
+    font-size: 0.8125rem;
+  }
+
+  /* CTA band buttons */
+  .cta-band {
+    padding: 44px 0;
+  }
+
+  .cta-inner {
+    gap: 20px;
+  }
+
+  .cta-actions {
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+  }
+
+  .cta-actions .btn {
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 0.875rem;
+    width: 100%;
+  }
 }

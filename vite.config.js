@@ -25,7 +25,18 @@ function seoFiles() {
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir);
     },
-    transformIndexHtml: (html) => html.replaceAll('__SITE_URL__', SITE_URL).replaceAll('__BASE_PATH__', BASE_PATH),
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        html = html.replaceAll('__SITE_URL__', SITE_URL).replaceAll('__BASE_PATH__', BASE_PATH);
+        // Preload the Latin Inter font so text renders in the final font on first paint
+        const font = ctx.bundle && Object.keys(ctx.bundle).find((f) => /inter-latin-wght-normal-.*\.woff2$/.test(f));
+        if (font) {
+          html = html.replace('</title>', `</title>\n    <link rel="preload" href="${BASE}${font}" as="font" type="font/woff2" crossorigin />`);
+        }
+        return html;
+      }
+    },
 
     // Serve the SEO-named image copies during `vite dev`
     configureServer(server) {

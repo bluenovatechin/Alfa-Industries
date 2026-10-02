@@ -96,7 +96,7 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
             <h1 id="product-modal-title" className="product-modal-title">{title}</h1>
             {extra.length > 0 && <p className="product-modal-sub">{extra.join(' · ')}</p>}
 
-            <h3 className="spec-heading">Specifications</h3>
+            <h2 className="spec-heading">Specifications</h2>
             {specs.length > 0 ? (
               <dl className="spec-table">
                 <div>
@@ -152,7 +152,7 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
 
         {related.length > 0 && (
           <div className="related">
-            <h3 className="spec-heading">More in {categoryName(product.categoryId)}</h3>
+            <h2 className="spec-heading">More in {categoryName(product.categoryId)}</h2>
             <div className="related-grid">
               {related.map((p) => {
                 const link = href(productPath(p));

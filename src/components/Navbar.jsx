@@ -17,7 +17,7 @@ export function BrandMark({ inverted = false }) {
   return (
     <span className={`brand ${inverted ? 'brand-inverted' : ''}`}>
       <span className="brand-logo">
-        <img src={`${import.meta.env.BASE_URL}assets/images/logo.png`} alt="HART" />
+        <img src={`${import.meta.env.BASE_URL}assets/images/logo.png`} alt="HART" width="170" height="73" />
       </span>
       <span className="brand-divider" aria-hidden="true" />
       <span className="brand-company">

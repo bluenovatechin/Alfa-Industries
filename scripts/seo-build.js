@@ -87,7 +87,7 @@ function productFigure(siteUrl, p, { heading = 'h3', lazy = true } = {}) {
   return `<article>
       <a href="${siteUrl}${productPath(p)}">
         <figure>
-          <img src="${siteUrl}/${productSeoImagePath(p)}" alt="${esc(productAlt(p))}" title="HART ${esc(p.code)} ${esc(decode(p.title))}"${lazy ? ' loading="lazy"' : ''} />
+          <img src="${siteUrl}/${productSeoImagePath(p)}" srcset="${siteUrl}/${p.images.thumbnailLocal} 450w, ${siteUrl}/${productSeoImagePath(p)} 800w" sizes="(min-width: 1024px) 260px, (min-width: 640px) 33vw, 50vw" alt="${esc(productAlt(p))}" title="HART ${esc(p.code)} ${esc(decode(p.title))}" width="450" height="311"${lazy ? ' loading="lazy"' : ''} />
           <figcaption>${esc(productAlt(p))}</figcaption>
         </figure>
       </a>
@@ -119,7 +119,7 @@ function bodyFor(siteUrl, segments) {
     <h1>HART stainless steel architectural hardware by Alfa Industries, Rajkot</h1>
     <p>${esc(COPY.about.join(' '))}</p>
     <p>We design and manufacture ${products.length} architectural fittings in AISI 316 and 304 stainless steel across ${categories.length} ranges, made 100% in-house at our plant in Shapar (Veraval), Rajkot, Gujarat, India, under ISO 9001:2008 procedures.</p>
-    <img src="${siteUrl}/assets/images/slider001.jpg" alt="Structural glazing with HART stainless steel spider fittings by Alfa Industries" width="972" height="462" />
+    <img src="${siteUrl}/assets/images/slider001.jpg" srcset="${siteUrl}/assets/images/slider001-640.webp 640w, ${siteUrl}/assets/images/slider001.webp 972w" sizes="100vw" alt="Structural glazing with HART stainless steel spider fittings by Alfa Industries" width="972" height="462" />
     <h2>Product ranges</h2>
     <ul>${categories.map((c) => categoryBlurb(siteUrl, c)).join('\n')}</ul>
     <h2>Industries and projects we supply</h2>
@@ -280,6 +280,13 @@ function renderRoute(baseHtml, siteUrl, publicDir, segments) {
     html = setMeta(html, attr, key, value);
   }
   html = html.replace(/(<link\s+rel="canonical"\s+href=")[^"]*(")/i, `$1${esc(canonical)}$2`);
+
+  if (!segments.length) {
+    // Home: start the hero photo download before CSS/JS arrive (phones get the 640px WebP)
+    const base = new URL(siteUrl + '/').pathname;
+    html = html.replace('</title>', `</title>
+    <link rel="preload" as="image" href="${base}assets/images/slider001.jpg" imagesrcset="${base}assets/images/slider001-640.webp 640w, ${base}assets/images/slider001.webp 972w" imagesizes="100vw" fetchpriority="high" />`);
+  }
 
   const scripts = seo.jsonLd
     .map((s) => `<script type="application/ld+json" data-route-ld="${esc(seo.path)}">${jsonLdText(s)}</script>`)
