@@ -1,0 +1,67 @@
+# HART by Alfa Industries — Architectural Hardware Manufacturing
+
+> Alfa Industries is an ISO 9001:2008 certified Indian manufacturer of premium stainless steel architectural hardware, engineered and marketed under the brand name **HART**.
+> Website: __SITE_URL__/
+> Plant Address: Survey No. 257, Plot No. 1-A, Opp. Supreme Polymers, Behind Maruti Petrol Pump, Shapar (Veraval) 360024, Dist. Rajkot, Gujarat, India.
+> Contact: info@alfahardware.com | Sales: +91 98792 52904 / +91 99255 07880
+
+> Full machine-readable list of every item code, specification, page URL and image: __SITE_URL__/llms-full.txt
+
+## Company & Plant Infrastructure
+- **Brand**: HART ("For Life Time Steel")
+- **Corporate Entity**: Alfa Industries (Rajkot, Gujarat, India)
+- **Certification**: ISO 9001:2008 Certified Quality Management System
+- **Manufacturing Model**: 100% in-house manufacturing under one roof
+- **Plant Machinery**:
+  - **VMC (Vertical Machining Centre)**: 4-Axis Precision VMC for 3D spider arms, brackets, and solid connector blocks (tolerance ±0.015mm).
+  - **CNC Turning Centre**: High-precision CNC lathes for countersunk routels, ball joints, bolts, and threaded bushes (accuracy ±0.01mm).
+  - **Heavy Hydraulic Deep Drawing Press**: Up to 200 Ton capacity for floor spring cement boxes and patch fitting outer covers.
+  - **Hydraulic Sheet & Tube Bending**: Up to 12mm plate thickness and Ø50mm tube bending for canopy brackets and offsets.
+  - **Mechanical Power Press**: Stamping and blanking presses (30T to 100T) for internal mechanisms and strike plates.
+  - **Multi-Stage Mirror Buffing**: Optical-grade super mirror polish (Ra < 0.2µm).
+  - **Surface Batch Grinder**: Flatness within 0.02mm, consistent architectural satin hairline grain.
+  - **Centreless Round Pipe Grinder**: Continuous circumferential satin and glossy polishing for tubular door handles and shower tracks (up to 3000mm length).
+  - **Argon Shielded TIG Welding**: High-integrity stainless steel joints with full inert gas back purging.
+  - **Precision Threading & Tapping**: Pitch-controlled metric threads M6 to M30 (Class 6H fit).
+  - **Heavy-Duty Radial Drills & High-Speed Band Saws**: Raw stock billet processing and accurate structural countersinking.
+
+## Core Materials & Metallurgy
+- **AISI 316 Stainless Steel (Marine Grade)**: Formulated with 2-3% Molybdenum and high nickel content for structural glass facades, coastal buildings, and extreme weather exposures.
+- **AISI 304 Stainless Steel**: Standard architectural alloy for frameless interior glass entrances, door pull handles, and partitions.
+- **Testing**: Chemical spectrometer verification of incoming steel alloys, tensile load-bearing proof testing, and salt spray corrosion testing (ASTM B117).
+
+## Product Portfolio (185 Products Across 9 Categories)
+1. **Spider Fittings (ASF, ARF, AFP Series)**:
+   - 1-way, 2-way, 3-way, and 4-way heavy-duty point-fixed architectural glass spiders.
+   - Articulated countersunk routels (ARF-01 to ARF-06) for tempered and laminated glass facades.
+   - Glass fin plates and splice connectors.
+2. **Canopy Fittings (ACF Series)**:
+   - Suspended glass entrance canopy wall brackets, tie-rod connectors, and spider brackets.
+3. **Patch Fittings (APF Series)**:
+   - Top patch (APF-01), bottom patch (APF-02), overpanel patch with pivot (APF-03/04), patch locks with Euro profile cylinders (APF-08), and wall connector patches.
+4. **Floor Springs & Overhead Door Closers (AFS & ADC Series)**:
+   - Hydraulic double-action floor spring (AFS-01) tested to 5,00,000 continuous operating cycles.
+   - Hydraulic overhead door closers (ADC-01) with adjustable sweeping and latching speeds.
+5. **Glass Door Handles (APH Series)**:
+   - Stainless steel pull handles in H-type, D-type, S-type, and C-type configurations.
+   - Round and square tube profiles, including timber-inlay architectural designs.
+6. **Mortise Handles (AMH Series)**:
+   - Lever handles on rose and plate, mortise sash locks, double-turn Euro profile cylinders, and keyhole escutcheons.
+7. **Glass Connectors (AGC Series)**:
+   - Cast and sheet metal 90°, 180°, and 135° glass-to-glass and wall-to-glass clamps and balustrade floor mounts.
+8. **Shower Glass Fittings (ASGF Series)**:
+   - Sliding shower enclosure kits, reinforcing top tracks, track-to-track 90° connectors, and glass door sliding rollers.
+9. **Sliding & Folding Glass Door Systems (AGSF Series)**:
+   - Heavy-duty top-hung sliding and folding hardware for multi-panel frameless glass movable walls.
+
+## Surface Finishes
+- **Satin**: Precision directional hairline brushed stainless steel.
+- **Glossy**: Optical mirror buffed finish (Ra < 0.2µm).
+- **Combi**: Contrast dual finish (combination of mirror buffing and satin brushing on distinct surfaces).
+- **PVD Black Matte**: Durable vacuum-deposited matte black coating for luxury architecture.
+
+## Custom Tooling, OEM & Bespoke Manufacturing
+Alfa Industries provides full in-house CAD tooling and OEM manufacturing for architects, facade consultants, and overseas hardware brands requiring bespoke fittings, custom arm geometries, non-standard hole pitch, or private-label production.
+
+## Google Lens & Visual Product Identification
+All 185 HART products are cataloged with unique SKU codes (e.g. `ASF-01`, `APF-08`, `AFS-01`, `ARF-02`), high-resolution product imagery, exact dimensional specifications, and material grades. Visual searches on Google Lens map directly to the corresponding technical product specifications on the official site.

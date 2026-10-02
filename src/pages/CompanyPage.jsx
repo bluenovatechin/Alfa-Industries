@@ -1,26 +1,37 @@
-import React from 'react';
-import { Building2, Factory, Home, Globe2, ArrowRight } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Building2, Factory, Home, Globe2, ArrowRight, Cog, Cpu, Wrench, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 import { PhoneIcon } from '../components/ContactIcons';
 import { href } from '../lib/router';
-import { COPY, COMPANY, MACHINES, PROCESS, asset, TOTAL_PRODUCTS, TOTAL_CATEGORIES } from '../data/catalog';
+import {
+  COPY, COMPANY, MACHINES, MACHINE_CATEGORIES, PROCESS, asset,
+  TOTAL_PRODUCTS, TOTAL_CATEGORIES
+} from '../data/catalog';
 import PageHeader from '../components/PageHeader';
+import FaqSection from '../components/FaqSection';
 import CtaBand from '../components/CtaBand';
 
 const SECTORS = [
-  { icon: Building2, title: 'Commercial', text: 'Offices, retail, hospitality and public buildings.' },
-  { icon: Factory, title: 'Industrial', text: 'Durable fittings for demanding environments.' },
-  { icon: Home, title: 'Domestic', text: 'Residences, interiors and shower enclosures.' },
-  { icon: Globe2, title: 'International', text: 'Supplied to projects outside India.' }
+  { icon: Building2, title: 'Commercial', text: 'Offices, retail complexes, hospitality, airports and public glass facades.' },
+  { icon: Factory, title: 'Industrial', text: 'Durable, corrosion-resistant AISI 316 fittings for demanding plant environments.' },
+  { icon: Home, title: 'Domestic', text: 'Luxury residences, frameless glass interiors, and custom shower enclosures.' },
+  { icon: Globe2, title: 'International', text: 'Engineered hardware supplied to architectural projects globally outside India.' }
 ];
 
 export default function CompanyPage() {
+  const [machineCat, setMachineCat] = useState('all');
+
+  const filteredMachines = useMemo(() => {
+    if (machineCat === 'all') return MACHINES;
+    return MACHINES.filter((m) => m.category === machineCat);
+  }, [machineCat]);
+
   return (
     <>
       <PageHeader
         crumbs={[{ label: 'Company' }]}
         eyebrow="About us"
         title="Alfa Industries, makers of HART architectural hardware"
-        lead="A Rajkot-based manufacturer of corrosion-resistant AISI 316 / 304 stainless steel fittings for glass facades, doors and interiors."
+        lead="An ISO 9001:2008 certified Rajkot manufacturer of high-precision AISI 316 / 304 stainless steel fittings for glass facades, canopies, doors and interior systems."
       />
 
       <section className="section">
@@ -41,7 +52,8 @@ export default function CompanyPage() {
               <div><dt>Materials</dt><dd>AISI 316 &amp; 304 stainless steel</dd></div>
               <div><dt>Portfolio</dt><dd>{TOTAL_PRODUCTS} products · {TOTAL_CATEGORIES} ranges</dd></div>
               <div><dt>Production</dt><dd>100% in-house</dd></div>
-              <div><dt>Plant</dt><dd>Shapar (Veraval), Rajkot, Gujarat</dd></div>
+              <div><dt>Plant location</dt><dd>Shapar (Veraval), Rajkot, Gujarat</dd></div>
+              <div><dt>Export &amp; OEM</dt><dd>Worldwide delivery &amp; custom tooling</dd></div>
             </dl>
           </aside>
         </div>
@@ -51,8 +63,8 @@ export default function CompanyPage() {
         <div className="container">
           <div className="section-head">
             <div>
-              <div className="eyebrow">Markets</div>
-              <h2 className="section-title">Trusted across project types</h2>
+              <div className="eyebrow">Markets &amp; Applications</div>
+              <h2 className="section-title">Trusted across structural and interior project types</h2>
             </div>
           </div>
           <div className="sector-grid">
@@ -67,27 +79,72 @@ export default function CompanyPage() {
         </div>
       </section>
 
+      {/* Machinery & Infrastructure */}
       <section className="section" id="infrastructure">
         <div className="container">
           <div className="section-head">
             <div>
-              <div className="eyebrow">Infrastructure</div>
-              <h2 className="section-title">A fully equipped, in-house production facility</h2>
+              <div className="eyebrow">Manufacturing Plant &amp; Machinery</div>
+              <h2 className="section-title">A fully integrated, in-house production facility in Rajkot</h2>
               <p className="section-lead">{COPY.infrastructure}</p>
             </div>
           </div>
 
-          <div className="machine-grid">
-            {MACHINES.map((m, i) => (
-              <div key={m.name} className="machine">
-                <span className="machine-num">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{m.name}</h3>
-                <p>{m.desc}</p>
+          {/* Machine Category Filter Tabs */}
+          <div className="machine-cat-filters">
+            {MACHINE_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                className={`range-chip ${machineCat === cat.id ? 'active' : ''}`}
+                onClick={() => setMachineCat(cat.id)}
+              >
+                {cat.label} {cat.id !== 'all' && `(${MACHINES.filter(m => m.category === cat.id).length})`}
+              </button>
+            ))}
+          </div>
+
+          {/* Machine Cards */}
+          <div className="machine-enhanced-grid">
+            {filteredMachines.map((m, i) => (
+              <div key={m.id} className="machine-card">
+                <div className="machine-card-head">
+                  <span className="machine-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="machine-badge">{m.categoryLabel}</span>
+                </div>
+                <h3 className="machine-name">{m.name}</h3>
+                <div className="machine-spec-highlight">{m.spec}</div>
+                <div className="machine-capacity-line">
+                  <strong>Capacity / Spec:</strong> {m.capacity}
+                </div>
+                <p className="machine-desc">{m.desc}</p>
+                {m.outputParts && (
+                  <div className="machine-parts-box">
+                    <span className="parts-label">Hardware manufactured:</span>
+                    <span className="parts-list">{m.outputParts}</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          <h3 className="subsection-title">Production process</h3>
+          {/* Custom OEM & Tooling Callout */}
+          <div className="custom-oem-banner">
+            <div className="custom-oem-content">
+              <span className="custom-oem-tag">Bespoke Architectural Engineering</span>
+              <h3>Need Custom Machining, Non-Standard Spiders, or OEM Hardware?</h3>
+              <p>
+                With 4-Axis VMC milling, multi-axis CNC turning, and precision press tooling under one roof, Alfa Industries designs and fabricates customized architectural hardware based on CAD drawings and project-specific glass engineering requirements.
+              </p>
+            </div>
+            <div className="custom-oem-action">
+              <a href={href('/contact')} className="btn btn-brand">
+                Request Custom Fabrication <ArrowRight size={16} />
+              </a>
+            </div>
+          </div>
+
+          <h3 className="subsection-title" style={{ marginTop: '56px' }}>5-Stage In-House Quality Process</h3>
           <ol className="process process-light">
             {PROCESS.map((step, i) => (
               <li key={step.title}>
@@ -100,13 +157,14 @@ export default function CompanyPage() {
         </div>
       </section>
 
+      {/* Leadership & Plant Management */}
       <section className="section section-tint">
         <div className="container team">
           <div>
-            <div className="eyebrow">Management</div>
-            <h2 className="section-title">Talk to the people who run the plant</h2>
+            <div className="eyebrow">Plant Management &amp; Technical Sales</div>
+            <h2 className="section-title">Direct contact with the leaders who run the plant</h2>
             <p className="section-lead">
-              Our experienced team helps you choose the right hardware for your project and can develop custom designs on request.
+              Our engineering team helps architects, facade consultants, and builders select the right hardware specifications and coordinates custom tooling from start to dispatch.
             </p>
             <a href={href('/contact')} className="text-link text-link-lg">
               Send an enquiry <ArrowRight size={16} />
@@ -130,7 +188,15 @@ export default function CompanyPage() {
         </div>
       </section>
 
+      {/* Structured SEO / ACO FAQ Section */}
+      <FaqSection
+        defaultCategory="all"
+        title="Frequently asked questions about Alfa Industries &amp; the plant"
+        lead="Key details on factory infrastructure in Rajkot, machine capabilities, AISI 316 vs 304 material grades, and quotation procedures."
+      />
+
       <CtaBand />
     </>
   );
 }
+

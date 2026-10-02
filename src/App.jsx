@@ -12,8 +12,9 @@ import QualityPage from './pages/QualityPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-import { useRoute, href, navigate } from './lib/router';
-import { getProduct, categoryName, productAlt, CATEGORY_META, asset } from './data/catalog';
+import { useRoute, href, navigate, BASE_PATH } from './lib/router';
+import { routeSeo, jsonLdText } from './lib/seo';
+import { getProduct, productPath } from './data/catalog';
 
 const STORAGE_KEY = 'alfa-enquiry-v1';
 
@@ -25,22 +26,6 @@ function loadEnquiry() {
     return [];
   }
 }
-
-const PAGE_TITLES = {
-  '': 'Stainless Steel Architectural Hardware',
-  products: 'Products Catalog',
-  company: 'About Alfa Industries',
-  quality: 'Quality Standards & Testing',
-  contact: 'Contact & Quotation Enquiry'
-};
-
-const PAGE_DESCRIPTIONS = {
-  '': 'Alfa Industries, Rajkot, manufactures HART architectural hardware in AISI 316 / 304 stainless steel: spider and patch fittings, glass connectors, door handles, sliding systems and floor springs. ISO 9001:2008 certified.',
-  products: 'Browse 185 HART stainless steel architectural hardware products: spider fittings, canopy fittings, patch fittings, glass connectors, glass door handles, mortise handles, sliding systems and floor springs.',
-  company: 'Alfa Industries, Rajkot: in-house manufacturer of HART stainless steel architectural hardware with VMC, CNC, pressing, grinding and TIG welding facilities.',
-  quality: 'HART hardware is manufactured under one roof to ISO 9001:2008 quality standards, from tested AISI 316 / 304 stainless steel.',
-  contact: 'Contact Alfa Industries, Shapar (Veraval), Rajkot, Gujarat, for HART stainless steel architectural hardware enquiries and quotations.'
-};
 
 export default function App() {
   const route = useRoute();
@@ -66,103 +51,54 @@ export default function App() {
     window.scrollTo({ top: 0 });
   }, [route.path]);
 
-  const activeProduct = route.query.p ? getProduct(route.query.p) : null;
+  const productSegmentCode = (route.segments[0] === 'products' && route.segments[1] && route.segments[2])
+    ? route.segments[2]
+    : null;
+  const activeProduct = productSegmentCode
+    ? getProduct(productSegmentCode)
+    : (route.query.p ? getProduct(route.query.p) : null);
 
   useEffect(() => {
-    if (!route.query.p) openedInApp.current = false;
-  }, [route.query.p]);
+    if (!activeProduct) openedInApp.current = false;
+  }, [activeProduct]);
 
+  // Per-route <title>, meta, canonical and JSON-LD (same builder the build uses to pre-render)
   useEffect(() => {
-    let title = PAGE_TITLES[page] ?? 'Page not found';
-    let description = PAGE_DESCRIPTIONS[page] ?? PAGE_DESCRIPTIONS[''];
-    let imageUrl = '';
+    const siteUrl = window.location.origin + BASE_PATH;
+    const seo = routeSeo(route.segments, route.query, siteUrl);
+    const title = seo ? seo.title : 'Page not found | HART by Alfa Industries';
+    const description = seo?.description || '';
+    const canonical = seo ? siteUrl + seo.path : '';
+    const image = seo?.image ? `${siteUrl}/${seo.image}` : '';
 
-    if (page === 'products' && route.segments[1]) {
-      title = categoryName(route.segments[1]);
-      description = `HART ${title} by Alfa Industries, Rajkot. ${CATEGORY_META[route.segments[1]]?.description || ''}`.trim();
-    }
-    if (activeProduct) {
-      title = `${activeProduct.code} ${activeProduct.title}`;
-      description = `${productAlt(activeProduct)}. Manufactured by Alfa Industries, Rajkot, India.`;
-      const imgPath = activeProduct.images?.fullLocal || activeProduct.images?.thumbnailLocal;
-      if (imgPath) {
-        imageUrl = window.location.origin + asset(imgPath);
-      }
-    }
+    document.title = title;
+    const set = (selector, value) => value && document.querySelector(selector)?.setAttribute('content', value);
+    set('meta[name="description"]', description);
+    set('meta[property="og:title"]', title);
+    set('meta[name="twitter:title"]', title);
+    set('meta[property="og:description"]', description);
+    set('meta[name="twitter:description"]', description);
+    set('meta[property="og:url"]', canonical);
+    set('meta[property="og:image"]', image);
+    set('meta[property="og:image:secure_url"]', image);
+    set('meta[name="twitter:image"]', image);
+    set('meta[property="og:image:alt"]', seo?.imageAlt);
+    set('meta[name="twitter:image:alt"]', seo?.imageAlt);
+    if (canonical) document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical);
+    document.querySelector('meta[name="robots"]')?.setAttribute('content', seo ? 'index, follow, max-image-preview:large, max-snippet:-1' : 'noindex, follow');
 
-    const fullTitle = `${title} | HART by Alfa Industries`;
-    document.title = fullTitle;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-
-    // Dynamic canonical URL
-    const canonical = window.location.origin + window.location.pathname + (route.query.p ? `?p=${encodeURIComponent(route.query.p)}` : '');
-    document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical);
-
-    // Dynamic Open Graph & Twitter Cards
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', fullTitle);
-    document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
-    document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical);
-    if (imageUrl) {
-      document.querySelector('meta[property="og:image"]')?.setAttribute('content', imageUrl);
-      document.querySelector('meta[property="og:image:secure_url"]')?.setAttribute('content', imageUrl);
-      document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', imageUrl);
-    }
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', fullTitle);
-    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
-
-    // Dynamic Schema.org JSON-LD for rich snippets
-    let dynamicLd = null;
-    if (activeProduct) {
-      dynamicLd = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: `HART ${activeProduct.code} ${activeProduct.title}`,
-        sku: activeProduct.code,
-        mpn: activeProduct.code,
-        image: imageUrl || undefined,
-        description,
-        brand: { '@type': 'Brand', name: 'HART' },
-        manufacturer: {
-          '@type': 'Organization',
-          name: 'Alfa Industries',
-          url: window.location.origin + href('/')
-        },
-        category: categoryName(activeProduct.categoryId),
-        material: activeProduct.specifications?.Material || 'AISI 304 / 316 Stainless Steel',
-        offers: {
-          '@type': 'Offer',
-          url: canonical,
-          priceCurrency: 'INR',
-          availability: 'https://schema.org/InStock',
-          itemCondition: 'https://schema.org/NewCondition'
-        }
-      };
-    } else if (page === 'products' && route.segments[1]) {
-      const catName = categoryName(route.segments[1]);
-      dynamicLd = {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: window.location.origin + href('/') },
-          { '@type': 'ListItem', position: 2, name: 'Products', item: window.location.origin + href('/products') },
-          { '@type': 'ListItem', position: 3, name: catName, item: canonical }
-        ]
-      };
-    }
-
-    let script = document.getElementById('dynamic-page-jsonld');
-    if (dynamicLd) {
-      if (!script) {
-        script = document.createElement('script');
-        script.id = 'dynamic-page-jsonld';
-        script.type = 'application/ld+json';
-        document.head.appendChild(script);
-      }
-      script.textContent = JSON.stringify(dynamicLd);
-    } else if (script) {
-      script.remove();
-    }
-  }, [page, route.segments, route.query.p, activeProduct]);
+    // The first page view already carries pre-rendered JSON-LD; replace it only after in-app navigation
+    const prerendered = document.querySelectorAll('script[data-route-ld]');
+    if (prerendered.length && prerendered[0].dataset.routeLd === seo?.path) return;
+    prerendered.forEach((s) => s.remove());
+    (seo?.jsonLd || []).forEach((schema) => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.dataset.routeLd = seo.path;
+      script.textContent = jsonLdText(schema);
+      document.head.appendChild(script);
+    });
+  }, [route]);
 
   // "/" opens search
   useEffect(() => {
@@ -186,7 +122,12 @@ export default function App() {
   const openProduct = useCallback(
     (code) => {
       openedInApp.current = true;
-      navigate(route.path, { ...route.query, p: code });
+      const target = getProduct(code);
+      if (target) {
+        navigate(productPath(target));
+      } else {
+        navigate(route.path, { ...route.query, p: code });
+      }
     },
     [route]
   );
@@ -195,6 +136,8 @@ export default function App() {
     if (openedInApp.current) {
       openedInApp.current = false;
       window.history.back();
+    } else if (route.segments[0] === 'products' && route.segments[1] && route.segments[2]) {
+      navigate(`/products/${route.segments[1]}`);
     } else {
       const { p, ...rest } = route.query;
       navigate(route.path, rest);
@@ -204,9 +147,15 @@ export default function App() {
   // Switching between products inside the modal should not stack history entries
   const switchProduct = useCallback(
     (code) => {
-      const next = { ...route.query, p: code };
-      window.history.replaceState(null, '', href(route.path, next));
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      const target = getProduct(code);
+      if (target) {
+        window.history.replaceState(null, '', href(productPath(target)));
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      } else {
+        const next = { ...route.query, p: code };
+        window.history.replaceState(null, '', href(route.path, next));
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
     },
     [route]
   );

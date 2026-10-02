@@ -5,25 +5,23 @@ export default function PageHeader({ crumbs = [], eyebrow, title, lead, aside, c
   return (
     <section className="page-header">
       <div className="container">
-        <nav className="breadcrumb" aria-label="Breadcrumb" itemScope itemType="https://schema.org/BreadcrumbList">
-          <span itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-            <a href={href('/')} itemProp="item">
-              <span itemProp="name">Home</span>
+        <nav className="breadcrumb" aria-label="Breadcrumb">
+          <span>
+            <a href={href('/')}>
+              <span>Home</span>
             </a>
-            <meta itemProp="position" content="1" />
           </span>
           {crumbs.map((c, i) => (
             <React.Fragment key={c.label}>
               <span aria-hidden="true">/</span>
-              <span itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+              <span>
                 {c.path && i < crumbs.length - 1 ? (
-                  <a href={href(c.path)} itemProp="item">
-                    <span itemProp="name">{c.label}</span>
+                  <a href={href(c.path)}>
+                    <span>{c.label}</span>
                   </a>
                 ) : (
-                  <span aria-current="page" itemProp="name">{c.label}</span>
+                  <span aria-current="page">{c.label}</span>
                 )}
-                <meta itemProp="position" content={String(i + 2)} />
               </span>
             </React.Fragment>
           ))}

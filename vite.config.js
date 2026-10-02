@@ -2,217 +2,94 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { alfaHardwareData } from './alfa_hardware_data.js';
+import { seoImageMap, prerenderAll, sitemapXml, robotsTxt, llmsFullTxt } from './scripts/seo-build.js';
 
-// Public address of the live site (no trailing slash). Change this when moving to a custom domain.
-const SITE_URL = process.env.SITE_URL || 'https://bluenovatechin.github.io/Alfa-Industries';
+// Public address of the live site (no trailing slash) — the ONLY place the address is set.
+// Moving to a custom domain: change this to e.g. 'https://www.alfahardware.com'.
+// Canonicals, sitemap, robots.txt, llms.txt, 404 redirect and the asset base path all follow it.
+const SITE_URL = (process.env.SITE_URL || 'https://bluenovatechin.github.io/Alfa-Industries').replace(/\/+$/, '');
+const BASE = new URL(SITE_URL + '/').pathname; // '/Alfa-Industries/' or '/'
+const BASE_PATH = BASE.replace(/\/+$/, ''); // '/Alfa-Industries' or ''
+const PUBLIC_DIR = path.resolve('public');
+const fillTemplate = (file) =>
+  fs.readFileSync(path.resolve('scripts', file), 'utf-8')
+    .replaceAll('__SITE_URL__', SITE_URL)
+    .replaceAll('__BASE__', BASE);
 
-const HTML_ENTITIES = { '&ldquo;': '“', '&rdquo;': '”', '&amp;': '&', '&quot;': '"', '&#39;': "'", '&nbsp;': ' ' };
-const xml = (s) => String(s).replace(/&[a-z#0-9]+;/gi, (m) => HTML_ENTITIES[m] ?? m).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-const TODAY = new Date().toISOString().split('T')[0];
-
-function sitemapEntry(path, options = {}) {
-  const {
-    images = [],
-    changefreq = 'weekly',
-    priority = '0.8',
-    lastmod = TODAY
-  } = options;
-
-  const imageTags = images
-    .map(({ src, caption, title }) => {
-      const locTag = `<image:loc>${xml(`${SITE_URL}/${src.replace(/^\//, '')}`)}</image:loc>`;
-      const captionTag = caption ? `<image:caption>${xml(caption)}</image:caption>` : '';
-      const titleTag = title ? `<image:title>${xml(title)}</image:title>` : '';
-      return `    <image:image>\n      ${locTag}${titleTag ? '\n      ' + titleTag : ''}${captionTag ? '\n      ' + captionTag : ''}\n    </image:image>`;
-    })
-    .join('\n');
-
-  return `  <url>
-    <loc>${xml(SITE_URL + path)}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-${imageTags ? imageTags + '\n' : ''}  </url>`;
-}
-
-function prerenderHtml(baseHtml, { title, description, canonicalUrl, ogImage, breadcrumbs }) {
-  let html = baseHtml;
-  if (title) {
-    html = html.replace(/<title>.*?<\/title>/i, `<title>${xml(title)}</title>`);
-    html = html.replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i, `$1${xml(title)}$2`);
-    html = html.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/i, `$1${xml(title)}$2`);
-  }
-  if (description) {
-    html = html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i, `$1${xml(description)}$2`);
-    html = html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i, `$1${xml(description)}$2`);
-    html = html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/i, `$1${xml(description)}$2`);
-  }
-  if (canonicalUrl) {
-    html = html.replace(/(<link\s+rel="canonical"\s+href=")[^"]*(")/i, `$1${xml(canonicalUrl)}$2`);
-    html = html.replace(/(<meta\s+property="og:url"\s+content=")[^"]*(")/i, `$1${xml(canonicalUrl)}$2`);
-  }
-  if (ogImage) {
-    html = html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i, `$1${xml(ogImage)}$2`);
-    html = html.replace(/(<meta\s+property="og:image:secure_url"\s+content=")[^"]*(")/i, `$1${xml(ogImage)}$2`);
-    html = html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i, `$1${xml(ogImage)}$2`);
-  }
-  if (breadcrumbs && breadcrumbs.length > 0) {
-    const breadcrumbLd = {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: breadcrumbs.map((b, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        name: b.name,
-        item: b.url
-      }))
-    };
-    const breadcrumbScript = `<script type="application/ld+json">\n${JSON.stringify(breadcrumbLd, null, 2)}\n</script>`;
-    html = html.replace('</head>', `  ${breadcrumbScript}\n  </head>`);
-  }
-  return html;
-}
-
-// Generates sitemap.xml, robots.txt, and pre-rendered static route HTML files for 200 OK search engine indexing
+// SEO output: descriptive product image names, sitemap.xml, robots.txt, llms-full.txt
+// and a pre-rendered HTML page (head tags, JSON-LD and visible content) for every route.
 function seoFiles() {
+  let outDir = path.resolve('dist');
   return {
     name: 'seo-files',
-    transformIndexHtml: (html) => html.replaceAll('__SITE_URL__', SITE_URL),
-    generateBundle(options, bundle) {
-      const { categories, products } = alfaHardwareData;
-      const image = (p) => ({
-        src: p.images.fullLocal || p.images.thumbnailLocal,
-        title: `HART ${p.code} ${p.title}`,
-        caption: `HART ${p.code} ${p.title}${p.specifications?.Material ? ' – ' + p.specifications.Material : ''}`
-      });
-      const withImage = (p) => p.images?.fullLocal || p.images?.thumbnailLocal;
-
-      const entries = [
-        sitemapEntry('/', {
-          images: [{ src: 'assets/images/slider001.jpg', title: 'HART Architectural Hardware', caption: 'Structural glazing with HART spider fittings' }],
-          priority: '1.0',
-          changefreq: 'weekly'
-        }),
-        sitemapEntry('/products/', { priority: '0.9', changefreq: 'weekly' }),
-        ...categories.map((c) =>
-          sitemapEntry(`/products/${c.id}/`, {
-            images: products.filter((p) => p.categoryId === c.id && withImage(p)).map(image),
-            priority: '0.9',
-            changefreq: 'weekly'
-          })
-        ),
-        ...products.map((p) =>
-          sitemapEntry(`/products/${p.categoryId}/?p=${encodeURIComponent(p.code)}`, {
-            images: withImage(p) ? [image(p)] : [],
-            priority: '0.8',
-            changefreq: 'weekly'
-          })
-        ),
-        sitemapEntry('/company/', { priority: '0.7', changefreq: 'monthly' }),
-        sitemapEntry('/quality/', { priority: '0.7', changefreq: 'monthly' }),
-        sitemapEntry('/contact/', { priority: '0.7', changefreq: 'monthly' })
-      ];
-
-      this.emitFile({
-        type: 'asset',
-        fileName: 'sitemap.xml',
-        source: `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${entries.join('\n')}
-</urlset>
-`
-      });
-
-      this.emitFile({
-        type: 'asset',
-        fileName: 'robots.txt',
-        source: `User-agent: *
-Allow: /
-
-# Prevent crawl budget waste on internal filter combinations
-Disallow: /*?q=*
-
-Sitemap: ${SITE_URL}/sitemap.xml
-`
-      });
-
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
     },
-    closeBundle() {
-      const { categories } = alfaHardwareData;
-      const distDir = path.resolve('dist');
-      const indexFile = path.join(distDir, 'index.html');
-      if (!fs.existsSync(indexFile)) return;
+    transformIndexHtml: (html) => html.replaceAll('__SITE_URL__', SITE_URL).replaceAll('__BASE_PATH__', BASE_PATH),
 
-      const mainHtml = fs.readFileSync(indexFile, 'utf-8');
+    // Serve the SEO-named image copies during `vite dev`
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = decodeURIComponent((req.url || '').split('?')[0]);
+        const key = url.startsWith(BASE) ? url.slice(BASE.length) : null;
+        const source = key && seoImageMap[key];
+        if (!source) return next();
+        res.setHeader('Content-Type', 'image/jpeg');
+        fs.createReadStream(path.join(PUBLIC_DIR, source)).pipe(res);
+      });
+    },
 
-      const staticPages = [
-        {
-          path: 'products/index.html',
-          title: 'Products & Architectural Hardware Catalog | HART by Alfa Industries',
-          description: 'Browse 185 HART stainless steel architectural hardware products: spider fittings, canopy fittings, patch fittings, glass connectors, door handles, sliding systems and floor springs.',
-          canonicalUrl: `${SITE_URL}/products/`,
-          breadcrumbs: [
-            { name: 'Home', url: `${SITE_URL}/` },
-            { name: 'Products', url: `${SITE_URL}/products/` }
-          ]
-        },
-        {
-          path: 'company/index.html',
-          title: 'About Alfa Industries | In-House Stainless Steel Hardware Manufacturer Rajkot',
-          description: 'Alfa Industries, Rajkot: in-house manufacturer of HART stainless steel architectural hardware with VMC, CNC, pressing, grinding and TIG welding facilities.',
-          canonicalUrl: `${SITE_URL}/company/`,
-          breadcrumbs: [
-            { name: 'Home', url: `${SITE_URL}/` },
-            { name: 'Company', url: `${SITE_URL}/company/` }
-          ]
-        },
-        {
-          path: 'quality/index.html',
-          title: 'Quality & Testing Standards | ISO 9001:2008 Certified HART Hardware',
-          description: 'HART hardware is manufactured under one roof to ISO 9001:2008 quality standards, from tested AISI 316 / 304 stainless steel.',
-          canonicalUrl: `${SITE_URL}/quality/`,
-          breadcrumbs: [
-            { name: 'Home', url: `${SITE_URL}/` },
-            { name: 'Quality', url: `${SITE_URL}/quality/` }
-          ]
-        },
-        {
-          path: 'contact/index.html',
-          title: 'Contact Alfa Industries | Hardware Enquiries, Factory Location Rajkot',
-          description: 'Contact Alfa Industries, Shapar (Veraval), Rajkot, Gujarat, for HART stainless steel architectural hardware enquiries, technical support and quotations.',
-          canonicalUrl: `${SITE_URL}/contact/`,
-          breadcrumbs: [
-            { name: 'Home', url: `${SITE_URL}/` },
-            { name: 'Contact', url: `${SITE_URL}/contact/` }
-          ]
-        },
-        ...categories.map((c) => ({
-          path: `products/${c.id}/index.html`,
-          title: `${c.name} | HART Architectural Hardware by Alfa Industries`,
-          description: `HART ${c.name} by Alfa Industries, Rajkot. In-house precision manufactured in AISI 316 and 304 stainless steel for glass facades and architectural fittings.`,
-          canonicalUrl: `${SITE_URL}/products/${c.id}/`,
-          breadcrumbs: [
-            { name: 'Home', url: `${SITE_URL}/` },
-            { name: 'Products', url: `${SITE_URL}/products/` },
-            { name: c.name, url: `${SITE_URL}/products/${c.id}/` }
-          ]
-        }))
-      ];
-
-      for (const p of staticPages) {
-        const targetFile = path.join(distDir, p.path);
-        fs.mkdirSync(path.dirname(targetFile), { recursive: true });
-        fs.writeFileSync(targetFile, prerenderHtml(mainHtml, p), 'utf-8');
+    generateBundle() {
+      for (const [target, source] of Object.entries(seoImageMap)) {
+        this.emitFile({ type: 'asset', fileName: target, source: fs.readFileSync(path.join(PUBLIC_DIR, source)) });
       }
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemapXml(SITE_URL) });
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robotsTxt(SITE_URL) });
+      this.emitFile({ type: 'asset', fileName: 'llms-full.txt', source: llmsFullTxt(SITE_URL) });
+      this.emitFile({ type: 'asset', fileName: 'llms.txt', source: fillTemplate('llms.txt') });
+      this.emitFile({ type: 'asset', fileName: '404.html', source: fillTemplate('404.html') });
+    },
+
+    closeBundle() {
+      const distDir = outDir;
+      if (!fs.existsSync(path.join(distDir, 'index.html'))) return;
+      const pages = prerenderAll({ distDir, publicDir: PUBLIC_DIR, siteUrl: SITE_URL });
+      console.log(`seo-files: pre-rendered ${pages} pages, ${Object.keys(seoImageMap).length} SEO image names`);
+    }
+  };
+}
+
+// The scraped dataset stays verbatim on disk, but the browser bundle only gets what the
+// UI reads: no raw HTML, no mirrored pages, and category product lists rebuilt by reference.
+// Roughly halves the JS download, which helps page speed (a Google ranking signal).
+function slimDataset() {
+  const file = path.resolve('alfa_hardware_data.js');
+  return {
+    name: 'slim-dataset',
+    async load(id) {
+      if (path.resolve(id.split('?')[0]) !== file) return null;
+      const { alfaHardwareData: d } = await import('./alfa_hardware_data.js');
+      const slim = {
+        meta: d.meta,
+        products: d.products.map(({ rawHtml, ...p }) => p),
+        categories: d.categories.map(({ products, ...c }) => c),
+        pages: { 'download.html': d.pages['download.html'] }
+      };
+      const source = fs.readFileSync(file, 'utf-8');
+      const api = source.slice(source.indexOf('const AlfaHardwareAPI'), source.indexOf('// Universal export'));
+      return `const alfaHardwareData = ${JSON.stringify(slim)};
+alfaHardwareData.categories.forEach((c) => { c.products = alfaHardwareData.products.filter((p) => p.categoryId === c.id); });
+${api}
+export default alfaHardwareData;
+export { alfaHardwareData, AlfaHardwareAPI };
+`;
     }
   };
 }
 
 export default defineConfig({
-  base: '/Alfa-Industries/',
-  plugins: [react(), seoFiles()],
+  base: BASE,
+  plugins: [react(), seoFiles(), slimDataset()],
   server: {
     port: 3000,
     open: false

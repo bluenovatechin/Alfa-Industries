@@ -1,23 +1,39 @@
 import React from 'react';
 import { Plus, Check } from 'lucide-react';
-import { decode, productImage, productAlt, onImageError, shortMaterial, categoryName } from '../data/catalog';
+import { href } from '../lib/router';
+import { decode, productPath, productImage, productAlt, onImageError, shortMaterial, categoryName } from '../data/catalog';
 
 export default function ProductCard({ product, onOpen, inEnquiry, onToggleEnquiry, showCategory = false }) {
   const specs = product.specifications || {};
   const material = shortMaterial(product);
   const finish = specs.Finish;
   const title = decode(product.title);
+  const productUrl = href(productPath(product));
+
+  const handleOpen = (e) => {
+    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      onOpen(product.code);
+    }
+  };
 
   return (
-    <article className="product-card">
-      <button className="product-card-media" onClick={() => onOpen(product.code)} aria-label={`View ${product.code} ${title}`}>
+    <article className="product-card" id={`product-${product.code.toLowerCase()}`}>
+      <a
+        href={productUrl}
+        className="product-card-media"
+        onClick={handleOpen}
+        aria-label={`View ${product.code} ${title}`}
+      >
         <img
           src={productImage(product)}
           alt={productAlt(product)}
           loading="lazy"
           onError={onImageError(product)}
+          width="400"
+          height="400"
         />
-      </button>
+      </a>
 
       <div className="product-card-body">
         <div className="product-card-meta">
@@ -26,7 +42,7 @@ export default function ProductCard({ product, onOpen, inEnquiry, onToggleEnquir
         </div>
 
         <h3 className="product-card-title">
-          <button onClick={() => onOpen(product.code)}>{title}</button>
+          <a href={productUrl} onClick={handleOpen}>{title}</a>
         </h3>
 
         <dl className="product-card-specs">

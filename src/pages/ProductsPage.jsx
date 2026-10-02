@@ -3,7 +3,7 @@ import { Search, LayoutGrid, List, Download, X, SlidersHorizontal, Plus, Check, 
 import { href } from '../lib/router';
 import {
   getCategories, getProducts, decode, productImage, productAlt, onImageError, shortMaterial, categoryName,
-  materialGroup, hasFinish, MATERIAL_FILTERS, FINISH_FILTERS, TOTAL_PRODUCTS, asset
+  materialGroup, hasFinish, MATERIAL_FILTERS, FINISH_FILTERS, TOTAL_PRODUCTS, asset, CATEGORY_META
 } from '../data/catalog';
 import ProductCard from '../components/ProductCard';
 import PageHeader from '../components/PageHeader';
@@ -134,7 +134,14 @@ export default function ProductsPage({ route, openProduct, isInEnquiry, toggleEn
             </a>
           )
         }
-      />
+      >
+        {category && CATEGORY_META[category.id]?.uses && (
+          <div className="range-seo">
+            <p><strong>Applications:</strong> {CATEGORY_META[category.id].uses}</p>
+            <p><strong>Also searched as:</strong> {CATEGORY_META[category.id].aka.join(' · ')}</p>
+          </div>
+        )}
+      </PageHeader>
 
       <section className="section section-catalogue" ref={sectionRef}>
         <div className="container catalogue-layout">

@@ -35,9 +35,12 @@ export function parsePath(pathname = window.location.pathname, search = window.l
   };
 }
 
-// Generate a clean URL without '#'
+// Generate a clean URL without '#'. Paths always end in '/' so links match the
+// pre-rendered folders (products/spider-fittings/index.html) and canonical URLs,
+// instead of bouncing through a GitHub Pages redirect.
 export function href(path, query = {}) {
-  const cleanPath = path ? (path.startsWith('/') ? path : '/' + path) : '/';
+  let cleanPath = path ? (path.startsWith('/') ? path : '/' + path) : '/';
+  if (!cleanPath.endsWith('/')) cleanPath += '/';
   const fullPath = (BASE_PATH + cleanPath) || '/';
 
   const qs = new URLSearchParams(

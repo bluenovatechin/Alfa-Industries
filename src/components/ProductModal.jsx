@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, Check, Plus, Download, Send, ChevronLeft, ChevronRight, Link2, ShieldCheck } from 'lucide-react';
 import { AlfaHardwareAPI } from '../data/alfaData';
 import { href } from '../lib/router';
-import { decode, productImage, productAlt, onImageError, categoryName, asset } from '../data/catalog';
+import { decode, productPath, productImage, productAlt, onImageError, categoryName, asset } from '../data/catalog';
 
 export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, onToggleEnquiry }) {
   const closeRef = useRef(null);
@@ -34,28 +34,6 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
   }, [product]);
 
   useEffect(() => setCopied(false), [product]);
-
-  // Product structured data (schema.org) so search engines can tie the photo to the product
-  useEffect(() => {
-    if (!product) return;
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: `${product.code} ${decode(product.title)}`,
-      sku: product.code,
-      image: new URL(productImage(product), window.location.origin).href,
-      description: productAlt(product),
-      category: categoryName(product.categoryId),
-      material: product.specifications?.Material,
-      brand: { '@type': 'Brand', name: 'HART' },
-      manufacturer: { '@type': 'Organization', name: 'Alfa Industries' },
-      url: window.location.href
-    });
-    document.head.appendChild(script);
-    return () => script.remove();
-  }, [product]);
 
   if (!product) return null;
 
@@ -109,13 +87,13 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
 
         <div className="product-modal-grid">
           <div className="product-modal-media">
-            <img src={productImage(product)} alt={productAlt(product)}onError={onImageError(product)} />
+            <img src={productImage(product)} alt={productAlt(product)} title={`HART ${product.code} ${title}`} onError={onImageError(product)} />
             <p className="media-note">Refer to the range catalogue for complete technical drawings.</p>
           </div>
 
           <div className="product-modal-info">
             <div className="code code-lg">{product.code}</div>
-            <h2 id="product-modal-title" className="product-modal-title">{title}</h2>
+            <h1 id="product-modal-title" className="product-modal-title">{title}</h1>
             {extra.length > 0 && <p className="product-modal-sub">{extra.join(' · ')}</p>}
 
             <h3 className="spec-heading">Specifications</h3>
@@ -176,15 +154,28 @@ export default function ProductModal({ product, onClose, onSwitch, isInEnquiry, 
           <div className="related">
             <h3 className="spec-heading">More in {categoryName(product.categoryId)}</h3>
             <div className="related-grid">
-              {related.map((p) => (
-                <button key={p.code} className="related-item" onClick={() => onSwitch(p.code)}>
-                  <span className="related-thumb">
-                    <img src={productImage(p, 'thumb')} alt="" loading="lazy" onError={onImageError(p)} />
-                  </span>
-                  <span className="code">{p.code}</span>
-                  <span className="related-title">{decode(p.title)}</span>
-                </button>
-              ))}
+              {related.map((p) => {
+                const link = href(productPath(p));
+                return (
+                  <a
+                    key={p.code}
+                    href={link}
+                    className="related-item"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
+                        e.preventDefault();
+                        onSwitch(p.code);
+                      }
+                    }}
+                  >
+                    <span className="related-thumb">
+                      <img src={productImage(p, 'thumb')} alt={productAlt(p)} loading="lazy" onError={onImageError(p)} width="80" height="80" />
+                    </span>
+                    <span className="code">{p.code}</span>
+                    <span className="related-title">{decode(p.title)}</span>
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}
