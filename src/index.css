@@ -3165,7 +3165,7 @@ kbd {
 
   .machine-list ul,
   .process {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .machine-list li:nth-child(odd) {
@@ -3987,6 +3987,7 @@ kbd {
 }
 
 @media (max-width: 1024px) {
+
   /* Stays pinned just below the sticky header while the products scroll */
   .range-switcher {
     position: sticky;
@@ -5541,6 +5542,22 @@ kbd {
   border-radius: var(--r-lg);
   border: 1px dashed var(--line);
 }
+
+@media (max-width:640px) {
+  .faq-question {
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .faq-chevron {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 /* Range page: applications & alternate names (also helps search matching) */
 .range-seo {
   margin-top: 14px;
@@ -5789,6 +5806,7 @@ textarea {
 
 /* Hover lifts make no sense on touch screens and leave "stuck" states */
 @media (hover: none) {
+
   .btn:hover,
   .range-card:hover,
   .product-card:hover,
@@ -5933,6 +5951,7 @@ textarea {
 /* Phones & tablets: drop the GPU-heavy effects (blurred glow, frosted glass, slow zoom).
    They cost seconds of main-thread and paint time on mid-range Android phones. */
 @media (max-width: 1024px) {
+
   .hero-bg-glow,
   .hero-edge-nav {
     display: none;
@@ -6041,6 +6060,7 @@ textarea {
 
 /* Phones: two compact cards per row instead of one card per screen */
 @media (max-width: 639px) {
+
   .product-grid,
   .product-grid-3 {
     grid-template-columns: 1fr 1fr;
@@ -6080,7 +6100,7 @@ textarea {
     font-size: 0.75rem;
   }
 
-  .product-card-specs > div {
+  .product-card-specs>div {
     display: block;
     padding: 0;
     border: 0;
@@ -6235,6 +6255,7 @@ textarea {
 /* ---------- Company: machinery ---------- */
 
 @media (max-width: 639px) {
+
   /* Filter chips become one swipeable row instead of five stacked rows */
   .machine-cat-filters {
     flex-wrap: nowrap;
@@ -6308,7 +6329,7 @@ textarea {
   }
 
   .footer-brand,
-  .footer-grid > div:last-child {
+  .footer-grid>div:last-child {
     grid-column: 1 / -1;
   }
 
@@ -6317,7 +6338,7 @@ textarea {
     font-size: 0.8125rem;
   }
 
-  .footer-links li + li {
+  .footer-links li+li {
     margin-top: 0;
   }
 
@@ -6339,6 +6360,7 @@ textarea {
 /* ---------- Mobile Form Inputs & Button Proportion Tuning ---------- */
 
 @media (max-width: 640px) {
+
   /* Contact and enquiry form card */
   .form-card {
     padding: 18px 14px;
